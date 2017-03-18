@@ -20,14 +20,14 @@
             <span class="units-separator" ng-show="preferences.showImperial && (preferences.showMetric || preferences.showSi)">/</span>
             <span class="metric" ng-show="preferences.showMetric">{{wData.conditions.temp.actual.metric}} &deg;C</span>
             <span class="units-separator" ng-show="preferences.showMetric && preferences.showSi">/</span>
-            <span class="si" ng-show="preferences.showSi">{{wData.conditions.temp.actual.si}} K</span>
+            <span class="si" ng-show="preferences.showSi">{{wData.conditions.temp.actual.si | number : 2}} K</span>
             <br/>
             <span>Feels like: </span>
             <span class="imperial" ng-show="preferences.showImperial">{{wData.conditions.temp.feelsLike.imperial}} &deg;F</span>
             <span class="units-separator" ng-show="preferences.showImperial && (preferences.showMetric || preferences.showSi)">/</span>
             <span class="metric" ng-show="preferences.showMetric">{{wData.conditions.temp.feelsLike.metric}} &deg;C</span>
             <span class="units-separator" ng-show="preferences.showMetric && preferences.showSi">/</span>
-            <span class="si" ng-show="preferences.showSi">{{wData.conditions.temp.feelsLike.si}} K</span>
+            <span class="si" ng-show="preferences.showSi">{{wData.conditions.temp.feelsLike.si | number : 2}} K</span>
             <br/>
         </div>
         <div>
@@ -37,7 +37,7 @@
             <span class="units-separator" ng-show="preferences.showImperial && (preferences.showMetric || preferences.showSi)">/</span>
             <span class="metric" ng-show="preferences.showMetric">{{wData.conditions.wind.speed.metric}} kph</span>
             <span class="units-separator" ng-show="preferences.showMetric && preferences.showSi">/</span>
-            <span class="si" ng-show="preferences.showSi">{{wData.conditions.wind.speed.si}} m/s</span>
+            <span class="si" ng-show="preferences.showSi">{{wData.conditions.wind.speed.si | number : 2}} m/s</span>
             {{wData.conditions.wind.direction}}
         </div>
     </div>
@@ -56,14 +56,14 @@
             <span class="units-separator" ng-show="preferences.showImperial && (preferences.showMetric || preferences.showSi)">/</span>
             <span class="metric" ng-show="preferences.showMetric">{{wData.forecast.today.temp.low.metric}} &deg;C</span>
             <span class="units-separator" ng-show="preferences.showMetric && preferences.showSi">/</span>
-            <span class="si" ng-show="preferences.showSi">{{wData.forecast.today.temp.low.si}} K</span>
+            <span class="si" ng-show="preferences.showSi">{{wData.forecast.today.temp.low.si | number : 2}} K</span>
             <br/>
             High:
             <span class="imperial" ng-show="preferences.showImperial">{{wData.forecast.today.temp.high.imperial}} &deg;F</span>
             <span class="units-separator" ng-show="preferences.showImperial && (preferences.showMetric || preferences.showSi)">/</span>
             <span class="metric" ng-show="preferences.showMetric">{{wData.forecast.today.temp.high.metric}} &deg;C</span>
             <span class="units-separator" ng-show="preferences.showMetric && preferences.showSi">/</span>
-            <span class="si" ng-show="preferences.showSi">{{wData.forecast.today.temp.high.si}} K</span>
+            <span class="si" ng-show="preferences.showSi">{{wData.forecast.today.temp.high.si | number : 2}} K</span>
         </div>
         <div>
             <div>Wind</div>
@@ -71,7 +71,7 @@
             <span class="units-separator" ng-show="preferences.showImperial && (preferences.showMetric || preferences.showSi)">/</span>
             <span class="metric" ng-show="preferences.showMetric">{{wData.forecast.today.wind.speed.metric}} kph</span>
             <span class="units-separator" ng-show="preferences.showMetric && preferences.showSi">/</span>
-            <span class="si" ng-show="preferences.showSi">{{wData.forecast.today.wind.speed.si}} m/s</span>
+            <span class="si" ng-show="preferences.showSi">{{wData.forecast.today.wind.speed.si | number : 2}} m/s</span>
             {{wData.forecast.today.wind.direction}}
         </div>
     </div>
@@ -90,21 +90,21 @@
             <span class="units-separator" ng-show="preferences.showImperial && (preferences.showMetric || preferences.showSi)">/</span>
             <span class="metric" ng-show="preferences.showMetric">{{wData.history.yesterday.temp.low.metric}} &deg;C</span>
             <span class="units-separator" ng-show="preferences.showMetric && preferences.showSi">/</span>
-            <span class="si" ng-show="preferences.showSi">{{wData.history.yesterday.temp.low.si}} K</span>
+            <span class="si" ng-show="preferences.showSi">{{wData.history.yesterday.temp.low.si | number : 2}} K</span>
             <br/>
             High:
             <span class="imperial" ng-show="preferences.showImperial">{{wData.history.yesterday.temp.high.imperial}} &deg;F</span>
             <span class="units-separator" ng-show="preferences.showImperial && (preferences.showMetric || preferences.showSi)">/</span>
             <span class="metric" ng-show="preferences.showMetric">{{wData.history.yesterday.temp.high.metric}} &deg;C</span>
             <span class="units-separator" ng-show="preferences.showMetric && preferences.showSi">/</span>
-            <span class="si" ng-show="preferences.showSi">{{wData.history.yesterday.temp.high.si}} K</span>
+            <span class="si" ng-show="preferences.showSi">{{wData.history.yesterday.temp.high.si | number : 2}} K</span>
             <br/>
             Average:
             <span class="imperial" ng-show="preferences.showImperial">{{wData.history.yesterday.temp.mean.imperial}} &deg;F</span>
             <span class="units-separator" ng-show="preferences.showImperial && (preferences.showMetric || preferences.showSi)">/</span>
             <span class="metric" ng-show="preferences.showMetric">{{wData.history.yesterday.temp.mean.metric}} &deg;C</span>
             <span class="units-separator" ng-show="preferences.showMetric && preferences.showSi">/</span>
-            <span class="si" ng-show="preferences.showSi">{{wData.history.yesterday.temp.mean.si}} K</span>
+            <span class="si" ng-show="preferences.showSi">{{wData.history.yesterday.temp.mean.si | number : 2}} K</span>
         </div>
         <div>
             <div>Wind</div>
@@ -112,7 +112,7 @@
             <span class="units-separator" ng-show="preferences.showImperial && (preferences.showMetric || preferences.showSi)">/</span>
             <span class="metric" ng-show="preferences.showMetric">{{wData.history.yesterday.wind.speed.metric}} kph</span>
             <span class="units-separator" ng-show="preferences.showMetric && preferences.showSi">/</span>
-            <span class="si" ng-show="preferences.showSi">{{wData.history.yesterday.wind.speed.si}} m/s</span>
+            <span class="si" ng-show="preferences.showSi">{{wData.history.yesterday.wind.speed.si | number : 2}} m/s</span>
             {{wData.history.yesterday.wind.direction}}
         </div>
     </div>
