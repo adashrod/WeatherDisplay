@@ -50,8 +50,8 @@ define([
         /**
          * Chooses the elements at the front of the array that have similar counts.
          * E.g. list = [{text: "alpha", count: 5}, {text: "bravo", count: 5}, {text: "charlie": 2}, ...]
-         * with tolerance == 2 this would choose just the first because the third count is more than 2 less than the
-         * first count
+         * with tolerance == 2 this would choose just alpha and bravo because charlie's count is more than 2 less than
+         * alpha's
          * @param {Array}  list        must be sorted descending by list[].count
          * @param {String} key         key to grab from elements in list for return value
          * @param {Number} tolerance   max difference between the count property of list[0] and subsequent elements that
