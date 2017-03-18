@@ -10,12 +10,35 @@ define([
     var interval = 10 * 60 * 1000; // 10 minutes
     var refreshPromise = null;
 
-    var WeatherDisplayController = function($scope, $timeout, $http, $sce) {
+    var WeatherDisplayController = function($scope, $window, $timeout, $http, $sce) {
         WeatherService.$http = $http;
         WeatherService.$sce = $sce;
         WeatherService.apiKey = AppConfig.apiKey;
 
-        $scope.location = "02446";
+        $scope.showSettingsModal = false;
+        $scope.preferences = {
+            location: "",
+            showImperial: true,
+            showMetric: true,
+            showSi: false
+        };
+        var localStorageKey = "weatherPreferences";
+        function saveConfig() { $window.localStorage.setItem(localStorageKey, JSON.stringify($scope.preferences)); }
+        function loadConfig() {
+            try {
+                var s = $window.localStorage.getItem(localStorageKey);
+                if (s !== null && typeof s !== "undefined" && s !== "null") { $scope.preferences = JSON.parse(s); }
+            } catch (e) {}
+        }
+        $scope.$watch("preferences.showImperial", saveConfig);
+        $scope.$watch("preferences.showMetric", saveConfig);
+        $scope.$watch("preferences.showSi", saveConfig);
+        var locationUpdatePromise = null;
+        $scope.$watch("preferences.location", function() {
+            $timeout.cancel(locationUpdatePromise);
+            locationUpdatePromise = $timeout(_.compose(getData, saveConfig), 2000);
+        });
+
         $scope.wData = {};
 
         function handleError(feature, error) {
@@ -52,8 +75,12 @@ define([
         function celsiusToKelvin(tempC) { return parseFloat(tempC) + 273.15; }
 
         function getData() {
-            WeatherService.getConditions($scope.location, function(data) {
+            WeatherService.getConditions($scope.preferences.location, function(data) {
                 var c = $scope.wData.conditions = $scope.wData.conditions || {};
+                c.location = {
+                    name: data.current_observation.display_location.full,
+                    zip: data.current_observation.display_location.zip
+                };
                 c.icon = data.current_observation.icon_url;
                 c.temp = {
                     actual: {
@@ -76,7 +103,7 @@ define([
                     }
                 };
             }, _.partial(handleError, "conditions"));
-            WeatherService.getForecast($scope.location, function(data) {
+            WeatherService.getForecast($scope.preferences.location, function(data) {
                 var f = $scope.wData.forecast = $scope.wData.forecast || {};
                 f.today = {
                     text: {
@@ -105,7 +132,7 @@ define([
                     }
                 };
             }, _.partial(handleError, "forecast"));
-            WeatherService.getYesterday($scope.location, function(data) {
+            WeatherService.getYesterday($scope.preferences.location, function(data) {
                 var h = $scope.wData.history = $scope.wData.history || {};
                 h.yesterday = {
                     temp: {
@@ -154,9 +181,13 @@ define([
             }, _.partial(handleError, "yesterday"));
             $timeout(getData, interval);
         }
+
+        $scope.toggleConfigModal = function() { $scope.showSettingsModal = !$scope.showSettingsModal; };
+
+        loadConfig();
         getData();
     };
-    WeatherDisplayController.$inject = ["$scope", "$timeout", "$http", "$sce"];
+    WeatherDisplayController.$inject = ["$scope", "$window", "$timeout", "$http", "$sce"];
 
     return WeatherDisplayController;
 });
