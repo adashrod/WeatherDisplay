@@ -52,6 +52,22 @@ define([
         function celsiusToKelvin(tempC) { return parseFloat(tempC) + 273.15; }
 
         function getData() {
+            WeatherService.getConditions($scope.location, function(data) {
+                var c = $scope.wData.conditions = $scope.wData.conditions || {};
+                c.icon = data.current_observation.icon_url;
+                c.temp = {
+                    actual: {
+                        imperial: data.current_observation.temp_f,
+                        metric: data.current_observation.temp_c,
+                        si: celsiusToKelvin(data.current_observation.temp_c)
+                    },
+                    feelsLike: {
+                        imperial: data.current_observation.feelslike_f,
+                        metric: data.current_observation.feelslike_c,
+                        si: celsiusToKelvin(data.current_observation.feelslike_c)
+                    }
+                }
+            }, _.partial(handleError, "conditions"));
             WeatherService.getForecast($scope.location, function(data) {
                 var f = $scope.wData.forecast = $scope.wData.forecast || {};
                 f.today = {

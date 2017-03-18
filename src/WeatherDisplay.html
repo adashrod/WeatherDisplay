@@ -9,6 +9,27 @@
 <body ng-controller="WeatherDisplayController" ng-cloak="true">
 <div>
     <div>
+        <span>Current</span>
+        <br/>
+        <img ng-src="{{wData.conditions.icon}}"/>
+        <br/>
+        <div>
+            <span class="imperial">{{wData.conditions.temp.actual.imperial}} &deg;F</span>
+            <span class="scale-separator">/</span>
+            <span class="metric">{{wData.conditions.temp.actual.metric}} &deg;C</span>
+            <span class="scale-separator">/</span>
+            <span class="si">{{wData.conditions.temp.actual.si}} K</span>
+            <br/>
+            <span>Feels like: </span>
+            <span class="imperial">{{wData.conditions.temp.feelsLike.imperial}} &deg;F</span>
+            <span class="scale-separator">/</span>
+            <span class="metric">{{wData.conditions.temp.feelsLike.metric}} &deg;C</span>
+            <span class="scale-separator">/</span>
+            <span class="si">{{wData.conditions.temp.feelsLike.si}} K</span>
+            <br/>
+        </div>
+    </div>
+    <div>
         <span>Today</span>
         <br/>
         <img ng-src="{{wData.forecast.today.icon}}"/>
