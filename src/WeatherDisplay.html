@@ -6,11 +6,65 @@
     <script src="script/lib/angular.js"></script>
     <script src="script/lib/require.js" data-main="script/weatherDisplayConfig.js"></script>
 </head>
-<body ng-controller="WeatherDisplayController">
+<body ng-controller="WeatherDisplayController" ng-cloak="true">
 <div>
-    <input type="text" ng-model="location"/>
-    <button ng-click="fetch()">fetch</button>
-    <br/>
+    <div>
+        <span>Today</span>
+        <br/>
+        <img ng-src="{{wData.forecast.today.icon}}"/>
+        <br/>
+        <span class="imperial">{{wData.forecast.today.text.imperial}}</span>
+        <br class="scale-separator"/>
+        <span class="metric">{{wData.forecast.today.text.metric}}</span>
+        <br/>
+        <div>
+            Low:
+            <span class="imperial">{{wData.forecast.today.temp.low.imperial}} &deg;F</span>
+            <span class="scale-separator">/</span>
+            <span class="metric">{{wData.forecast.today.temp.low.metric}} &deg;C</span>
+            <span class="scale-separator">/</span>
+            <span class="si">{{wData.forecast.today.temp.low.si}} K</span>
+            <br/>
+            High:
+            <span class="imperial">{{wData.forecast.today.temp.high.imperial}} &deg;F</span>
+            <span class="scale-separator">/</span>
+            <span class="metric">{{wData.forecast.today.temp.high.metric}} &deg;C</span>
+            <span class="scale-separator">/</span>
+            <span class="si">{{wData.forecast.today.temp.high.si}} K</span>
+        </div>
+    </div>
+    <div>
+        <span>Yesterday</span>
+        <br/>
+        <img ng-src="{{wData.history.yesterday.icon}}" title="{{wData.history.yesterday.iconName}}"/>
+        <br/>
+        <div>
+            <span ng-repeat="text in wData.history.yesterday.texts">{{text}}{{$last ? "" : " / "}}</span>
+        </div>
+        <br/>
+        <div>
+            Low:
+            <span class="imperial">{{wData.history.yesterday.temp.low.imperial}} &deg;F</span>
+            <span class="scale-separator">/</span>
+            <span class="metric">{{wData.history.yesterday.temp.low.metric}} &deg;C</span>
+            <span class="scale-separator">/</span>
+            <span class="si">{{wData.history.yesterday.temp.low.si}} K</span>
+            <br/>
+            High:
+            <span class="imperial">{{wData.history.yesterday.temp.high.imperial}} &deg;F</span>
+            <span class="scale-separator">/</span>
+            <span class="metric">{{wData.history.yesterday.temp.high.metric}} &deg;C</span>
+            <span class="scale-separator">/</span>
+            <span class="si">{{wData.history.yesterday.temp.high.si}} K</span>
+            <br/>
+            Average:
+            <span class="imperial">{{wData.history.yesterday.temp.mean.imperial}} &deg;F</span>
+            <span class="scale-separator">/</span>
+            <span class="metric">{{wData.history.yesterday.temp.mean.metric}} &deg;C</span>
+            <span class="scale-separator">/</span>
+            <span class="si">{{wData.history.yesterday.temp.mean.si}} K</span>
+        </div>
+    </div>
 </div>
 </body>
 </html>
