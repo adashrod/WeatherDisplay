@@ -66,7 +66,15 @@ define([
                         metric: data.current_observation.feelslike_c,
                         si: celsiusToKelvin(data.current_observation.feelslike_c)
                     }
-                }
+                };
+                c.wind = {
+                    summary: data.current_observation.wind_string,
+                    direction: data.current_observation.wind_dir,
+                    speed: {
+                        mph: data.current_observation.wind_mph,
+                        kph: data.current_observation.wind_kph
+                    }
+                };
             }, _.partial(handleError, "conditions"));
             WeatherService.getForecast($scope.location, function(data) {
                 var f = $scope.wData.forecast = $scope.wData.forecast || {};
@@ -86,6 +94,13 @@ define([
                             imperial: data.forecast.simpleforecast.forecastday[0].high.fahrenheit,
                             metric: data.forecast.simpleforecast.forecastday[0].high.celsius,
                             si: celsiusToKelvin(data.forecast.simpleforecast.forecastday[0].high.celsius)
+                        }
+                    },
+                    wind: {
+                        direction: data.forecast.simpleforecast.forecastday[0].avewind.dir,
+                        speed: {
+                            mph: data.forecast.simpleforecast.forecastday[0].avewind.mph,
+                            kph: data.forecast.simpleforecast.forecastday[0].avewind.kph
                         }
                     }
                 };
@@ -108,6 +123,13 @@ define([
                             imperial: data.history.dailysummary[0].meantempi,
                             metric: data.history.dailysummary[0].meantempm,
                             si: celsiusToKelvin(data.history.dailysummary[0].meantempm)
+                        }
+                    },
+                    wind: {
+                        direction: data.history.dailysummary[0].meanwdire,
+                        speed: {
+                            mph: data.history.dailysummary[0].meanwindspdi,
+                            kph: data.history.dailysummary[0].meanwindspdm
                         }
                     }
                 };
