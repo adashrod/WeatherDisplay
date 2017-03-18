@@ -1,0 +1,14 @@
+body {
+    font-family: Arial, sans-serif
+}
+
+.tile {
+    margin: 5px;
+
+    border-width: 2px;
+    border-style: solid;
+    border-color: #ccc #555 #555 #ccc;
+    border-radius: 5px;
+
+    padding: 5px;
+}

@@ -5,11 +5,12 @@
     <title>Weather</title>
     <script src="script/lib/angular.js"></script>
     <script src="script/lib/require.js" data-main="script/weatherDisplayConfig.js"></script>
+    <link rel="stylesheet" href="style/base.css"/>
 </head>
 <body ng-controller="WeatherDisplayController" ng-cloak="true">
 <div>
-    <div>
-        <span>Current</span>
+    <div id="current" class="tile">
+        <div class="header">Current</div>
         <br/>
         <img ng-src="{{wData.conditions.icon}}"/>
         <br/>
@@ -37,8 +38,8 @@
             {{wData.conditions.wind.direction}}
         </div>
     </div>
-    <div>
-        <span>Today</span>
+    <div id="forecast-today" class="tile">
+        <div class="header">Today</div>
         <br/>
         <img ng-src="{{wData.forecast.today.icon}}"/>
         <br/>
@@ -69,8 +70,8 @@
             {{wData.forecast.today.wind.direction}}
         </div>
     </div>
-    <div>
-        <span>Yesterday</span>
+    <div id="yesterday" class="tile">
+        <div class="header">Yesterday</div>
         <br/>
         <img ng-src="{{wData.history.yesterday.icon}}" title="{{wData.history.yesterday.iconName}}"/>
         <br/>
