@@ -73,6 +73,14 @@ define([
         }
 
         function celsiusToKelvin(tempC) { return parseFloat(tempC) + 273.15; }
+        /**
+         * km    1 hr    1 min   1000m
+         * -- x ------ x ----- x -----
+         * hr   60 min   60 s    1 km
+         */
+        function kphToMs(speedKph) {
+            return parseFloat(speedKph) * 1000 / 3600;
+        }
 
         function getData() {
             WeatherService.getConditions($scope.preferences.location, function(data) {
@@ -98,8 +106,9 @@ define([
                     summary: data.current_observation.wind_string,
                     direction: data.current_observation.wind_dir,
                     speed: {
-                        mph: data.current_observation.wind_mph,
-                        kph: data.current_observation.wind_kph
+                        imperial: data.current_observation.wind_mph,
+                        metric: data.current_observation.wind_kph,
+                        si: kphToMs(data.current_observation.wind_kph)
                     }
                 };
             }, _.partial(handleError, "conditions"));
@@ -126,8 +135,9 @@ define([
                     wind: {
                         direction: data.forecast.simpleforecast.forecastday[0].avewind.dir,
                         speed: {
-                            mph: data.forecast.simpleforecast.forecastday[0].avewind.mph,
-                            kph: data.forecast.simpleforecast.forecastday[0].avewind.kph
+                            imperial: data.forecast.simpleforecast.forecastday[0].avewind.mph,
+                            metric: data.forecast.simpleforecast.forecastday[0].avewind.kph,
+                            si: kphToMs(data.forecast.simpleforecast.forecastday[0].avewind.kph)
                         }
                     }
                 };
@@ -155,8 +165,9 @@ define([
                     wind: {
                         direction: data.history.dailysummary[0].meanwdire,
                         speed: {
-                            mph: data.history.dailysummary[0].meanwindspdi,
-                            kph: data.history.dailysummary[0].meanwindspdm
+                            imperial: data.history.dailysummary[0].meanwindspdi,
+                            metric: data.history.dailysummary[0].meanwindspdm,
+                            si: kphToMs(data.history.dailysummary[0].meanwindspdm)
                         }
                     }
                 };
