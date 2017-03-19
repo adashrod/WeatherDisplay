@@ -17,13 +17,13 @@
         <br/>
         <div>
             <span ng-repeat="sys in currentUnitSystems">
-                <span>{{wData.conditions.temp.actual[sys] |  truncatedFloat : 2}} {{unitNamesBySystem.temperature[sys]}}</span>
+                <span>{{wData.conditions.temp.actual[sys] | truncatedFloat : 2}} {{unitNamesBySystem.temperature[sys]}}</span>
                 <span ng-if="!$last" class="units-separator">/</span>
             </span>
             <br/>
             <span>Feels like: </span>
             <span ng-repeat="sys in currentUnitSystems">
-                <span>{{wData.conditions.temp.feelsLike[sys] |  truncatedFloat : 2}} {{unitNamesBySystem.temperature[sys]}}</span>
+                <span>{{wData.conditions.temp.feelsLike[sys] | truncatedFloat : 2}} {{unitNamesBySystem.temperature[sys]}}</span>
                 <span ng-if="!$last" class="units-separator">/</span>
             </span>
             <br/>
@@ -32,7 +32,7 @@
             <div>Wind</div>
             <div>{{wData.conditions.wind.summary}}</div>
             <span ng-repeat="sys in currentUnitSystems">
-                <span>{{wData.conditions.wind.speed[sys] |  truncatedFloat : 1}} {{unitNamesBySystem.speed[sys]}}</span>
+                <span>{{wData.conditions.wind.speed[sys] | truncatedFloat : 1}} {{unitNamesBySystem.speed[sys]}}</span>
                 <span ng-if="!$last" class="units-separator">/</span>
             </span>
             {{wData.conditions.wind.direction}}
@@ -50,20 +50,20 @@
         <div>
             Low:
             <span ng-repeat="sys in currentUnitSystems">
-                <span>{{wData.forecast.today.temp.low[sys] |  truncatedFloat : 2}} {{unitNamesBySystem.temperature[sys]}}</span>
+                <span>{{wData.forecast.today.temp.low[sys] | truncatedFloat : 2}} {{unitNamesBySystem.temperature[sys]}}</span>
                 <span ng-if="!$last" class="units-separator">/</span>
             </span>
             <br/>
             High:
             <span ng-repeat="sys in currentUnitSystems">
-                <span>{{wData.forecast.today.temp.high[sys] |  truncatedFloat : 2}} {{unitNamesBySystem.temperature[sys]}}</span>
+                <span>{{wData.forecast.today.temp.high[sys] | truncatedFloat : 2}} {{unitNamesBySystem.temperature[sys]}}</span>
                 <span ng-if="!$last" class="units-separator">/</span>
             </span>
         </div>
         <div>
             <div>Wind</div>
             <span ng-repeat="sys in currentUnitSystems">
-                <span>{{wData.forecast.today.wind.speed[sys] |  truncatedFloat : 1}} {{unitNamesBySystem.speed[sys]}}</span>
+                <span>{{wData.forecast.today.wind.speed[sys] | truncatedFloat : 1}} {{unitNamesBySystem.speed[sys]}}</span>
                 <span ng-if="!$last" class="units-separator">/</span>
             </span>
             {{wData.forecast.today.wind.direction}}
@@ -81,26 +81,26 @@
         <div>
             Low:
             <span ng-repeat="sys in currentUnitSystems">
-                <span>{{wData.history.yesterday.temp.low[sys] |  truncatedFloat : 2}} {{unitNamesBySystem.temperature[sys]}}</span>
+                <span>{{wData.history.yesterday.temp.low[sys] | truncatedFloat : 2}} {{unitNamesBySystem.temperature[sys]}}</span>
                 <span ng-if="!$last" class="units-separator">/</span>
             </span>
             <br/>
             High:
             <span ng-repeat="sys in currentUnitSystems">
-                <span>{{wData.history.yesterday.temp.high[sys] |  truncatedFloat : 2}} {{unitNamesBySystem.temperature[sys]}}</span>
+                <span>{{wData.history.yesterday.temp.high[sys] | truncatedFloat : 2}} {{unitNamesBySystem.temperature[sys]}}</span>
                 <span ng-if="!$last" class="units-separator">/</span>
             </span>
             <br/>
             Average:
             <span ng-repeat="sys in currentUnitSystems">
-                <span>{{wData.history.yesterday.temp.mean[sys] |  truncatedFloat : 2}} {{unitNamesBySystem.temperature[sys]}}</span>
+                <span>{{wData.history.yesterday.temp.mean[sys] | truncatedFloat : 2}} {{unitNamesBySystem.temperature[sys]}}</span>
                 <span ng-if="!$last" class="units-separator">/</span>
             </span>
         </div>
         <div>
             <div>Wind</div>
             <span ng-repeat="sys in currentUnitSystems">
-                <span>{{wData.history.yesterday.wind.speed[sys] |  truncatedFloat : 1}} {{unitNamesBySystem.speed[sys]}}</span>
+                <span>{{wData.history.yesterday.wind.speed[sys] | truncatedFloat : 1}} {{unitNamesBySystem.speed[sys]}}</span>
                 <span ng-if="!$last" class="units-separator">/</span>
             </span>
             {{wData.history.yesterday.wind.direction}}
