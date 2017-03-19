@@ -16,14 +16,35 @@ define([
         WeatherService.apiKey = AppConfig.apiKey;
 
         $scope.showSettingsModal = false;
+        $scope.unitNamesBySystem = {
+            temperature: {
+                imperial: "°F",
+                metric: "°C",
+                si: "K"
+            },
+            speed: {
+                imperial: "mph",
+                metric: "kph",
+                si: "m/s"
+            }
+        };
         $scope.preferences = {
             location: "",
             showImperial: true,
             showMetric: true,
             showSi: false
         };
+        $scope.currentUnitSystems = [];
         var localStorageKey = "weatherPreferences";
-        function saveConfig() { $window.localStorage.setItem(localStorageKey, JSON.stringify($scope.preferences)); }
+        function saveConfig() {
+            $window.localStorage.setItem(localStorageKey, JSON.stringify($scope.preferences));
+            $scope.currentUnitSystems = [];
+            _.each($scope.preferences, function(enabled, key) {
+                if (typeof enabled === "boolean" && enabled && key.substring(0, 4) === "show") {
+                    $scope.currentUnitSystems.push(key.substring(4).toLowerCase());
+                }
+            });
+        }
         function loadConfig() {
             try {
                 var s = $window.localStorage.getItem(localStorageKey);

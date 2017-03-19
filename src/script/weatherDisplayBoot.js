@@ -1,9 +1,11 @@
 define([
     "underscore",
-    "controller/WeatherDisplayController"
+    "controller/WeatherDisplayController",
+    "filter/TruncatedFloat"
 ], function(
     _,
-    WeatherDisplayController
+    WeatherDisplayController,
+    TruncatedFloat
 ) {
     var appName = "weatherDisplay";
     _.noConflict();
@@ -11,6 +13,7 @@ define([
     var app = angular.module(appName, []);
 
     app.controller("WeatherDisplayController", WeatherDisplayController);
+    app.filter("truncatedFloat", TruncatedFloat);
 
     try {
         angular.bootstrap(window.document, [appName]);
