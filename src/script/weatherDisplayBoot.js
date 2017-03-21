@@ -1,10 +1,12 @@
 define([
     "underscore",
     "controller/WeatherDisplayController",
+    "directive/WeatherPage",
     "filter/TruncatedFloat"
 ], function(
     _,
     WeatherDisplayController,
+    WeatherPage,
     TruncatedFloat
 ) {
     var appName = "weatherDisplay";
@@ -13,6 +15,7 @@ define([
     var app = angular.module(appName, []);
 
     app.controller("WeatherDisplayController", WeatherDisplayController);
+    app.directive("weatherPage", WeatherPage);
     app.filter("truncatedFloat", TruncatedFloat);
 
     try {

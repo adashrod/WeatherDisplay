@@ -1,0 +1,56 @@
+<div ng-repeat="d in data" ng-show="$index === currentPage">
+    <br/>
+    Date: {{d.date}}
+    <br/>
+    Type: {{d.type}}
+    <br/>
+    <img ng-src="{{d.icon}}"/>
+    <br/>
+    <div class="temperature current-actual" ng-class="{'no-data':!d.temperature.current.actual}">
+        <span>Current</span>
+        <span ng-repeat="sys in currentUnitSystems">
+            <span>{{d.temperature.current.actual[sys] | truncatedFloat : 2}} {{unitNamesBySystem.temperature[sys]}}</span>
+            <span ng-if="!$last" class="units-separator"> / </span>
+        </span>
+    </div>
+    <div class="wind" ng-class="{'no-data': !d.wind}">
+        <span>Wind</span>
+        <div ng-class="{'no-data': !d.wind.summary}">{{d.wind.summary}}&nbsp;</div><!--todo: use CSS to set the size of this div instead of relying on nbsp to give it height-->
+        <span ng-repeat="sys in currentUnitSystems" ng-class="{'no-data': !d.wind.speed}">
+            <span>{{d.wind.speed[sys] | truncatedFloat : 1}} {{unitNamesBySystem.speed[sys]}}</span>
+            <span ng-if="!$last" class="units-separator"> / </span>
+        </span>
+        <span ng-class="{'no-data': !d.wind.direction}"> {{d.wind.direction}}</span>
+    </div>
+    <div class="temperature current-feels-like" ng-class="{'no-data':!d.temperature.current.feelsLike}">
+        <span>Feels like</span>
+        <span ng-repeat="sys in currentUnitSystems">
+            <span>{{d.temperature.current.feelsLike[sys] | truncatedFloat : 2}} {{unitNamesBySystem.temperature[sys]}}</span>
+            <span ng-if="!$last" class="units-separator"> / </span>
+        </span>
+    </div>
+    <div class="temperature low" ng-class="{'no-data':!d.temperature.low}">
+        <span>Low</span>
+        <span ng-repeat="sys in currentUnitSystems">
+            <span>{{d.temperature.low[sys] | truncatedFloat : 2}} {{unitNamesBySystem.temperature[sys]}}</span>
+            <span ng-if="!$last" class="units-separator"> / </span>
+        </span>
+    </div>
+    <div class="temperature high" ng-class="{'no-data':!d.temperature.high}">
+        <span>High</span>
+        <span ng-repeat="sys in currentUnitSystems">
+            <span>{{d.temperature.high[sys] | truncatedFloat : 2}} {{unitNamesBySystem.temperature[sys]}}</span>
+            <span ng-if="!$last" class="units-separator"> / </span>
+        </span>
+    </div>
+    <div class="temperature average" ng-class="{'no-data':!d.temperature.average}">
+        <span>Average</span>
+        <span ng-repeat="sys in currentUnitSystems">
+            <span>{{d.temperature.average[sys] | truncatedFloat : 2}} {{unitNamesBySystem.temperature[sys]}}</span>
+            <span ng-if="!$last" class="units-separator"> / </span>
+        </span>
+    </div>
+    <button ng-click="previousPage()" ng-disabled="!hasPrevious()">prev</button>
+    <button ng-click="switchView()">Switch</button>
+    <button ng-click="nextPage()" ng-disabled="!hasNext()">next</button>
+</div>
