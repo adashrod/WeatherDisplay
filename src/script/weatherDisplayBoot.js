@@ -1,11 +1,13 @@
 define([
     "underscore",
     "controller/WeatherDisplayController",
+    "directive/HelpModal",
     "directive/WeatherPage",
     "filter/TruncatedFloat"
 ], function(
     _,
     WeatherDisplayController,
+    HelpModal,
     WeatherPage,
     TruncatedFloat
 ) {
@@ -16,6 +18,7 @@ define([
 
     app.controller("WeatherDisplayController", WeatherDisplayController);
     app.directive("weatherPage", WeatherPage);
+    app.directive("helpModal", HelpModal);
     app.filter("truncatedFloat", TruncatedFloat);
 
     try {

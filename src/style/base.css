@@ -26,7 +26,7 @@ button {
 /***** page-level *****/
 #location, .mode-label { text-align: center; }
 
-/***** weather page *****/
+/***** weather page directive *****/
 .weather-page .date { text-align: center; }
 
 .weather-page .icon { width: 25%; }
@@ -34,6 +34,33 @@ button {
 .weather-page .current-container { width: 75%; }
 
 .weather-page .buttons { text-align: center; }
+
+/***** help modal directive *****/
+.help-toggle {
+    color: #bbb;
+    cursor: pointer;
+}
+
+.help-modal {
+    position: absolute;
+    z-index: 1000;
+
+    margin: 5px;
+
+    border-width: 2px;
+    border-style: solid;
+    border-color: #008;
+/*    border-color: #ccc #555 #555 #ccc;
+    border-radius: 5px;*/
+
+    padding: 5px;
+
+    background: #e0e0ff;
+
+    min-width: 350px;
+
+    box-shadow: 10px 10px 20px 0px rgba(0,0,0,0.75);
+}
 
 /***** preferences *****/
 #modal-background {
@@ -101,4 +128,9 @@ button {
 
 #preferences-modal .units label, #preferences-modal .units input {
     display: table-cell;
+}
+
+#preferences-modal .help-modal .example {
+    color: #777;
+    font-style: italic;
 }
