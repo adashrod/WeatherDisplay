@@ -24,7 +24,8 @@ define([
             location: "",
             showImperial: true,
             showMetric: true,
-            showSi: false
+            showSi: false,
+            hourlyInterval: 1
         };
         $scope.currentUnitSystems = [];
         var localStorageKey = "weatherPreferences";
@@ -40,17 +41,24 @@ define([
         function loadConfig() {
             try {
                 var s = $window.localStorage.getItem(localStorageKey);
-                if (s !== null && typeof s !== "undefined" && s !== "null") { $scope.preferences = JSON.parse(s); }
+                if (s !== null && typeof s !== "undefined" && s !== "null") {
+                    // not just doing $scope.preferences = JSON.parse(s) because then things not present in local storage,
+                    // i.e. new features that have never been persisted in this session, would get deleted from the scope
+                    var storedPrefs = JSON.parse(s);
+                    _.each(storedPrefs, function(v, k) { $scope.preferences[k] = v; });
+                }
             } catch (e) {}
         }
         $scope.$watch("preferences.showImperial", saveConfig);
         $scope.$watch("preferences.showMetric", saveConfig);
         $scope.$watch("preferences.showSi", saveConfig);
-        var locationUpdatePromise = null;
-        $scope.$watch("preferences.location", function() {
-            $timeout.cancel(locationUpdatePromise);
-            locationUpdatePromise = $timeout(_.compose(getData, saveConfig), 2000);
-        });
+        var prefChangeRefreshDataPromise = null;
+        function onPrefsChangeRefreshData() {
+            $timeout.cancel(prefChangeRefreshDataPromise);
+            prefChangeRefreshDataPromise = $timeout(_.compose(getData, saveConfig), 2000);
+        }
+        $scope.$watch("preferences.location", onPrefsChangeRefreshData);
+        $scope.$watch("preferences.hourlyInterval", onPrefsChangeRefreshData);
 
         $scope.hourlyModeData = [];
         $scope.dayModeData = [];
@@ -88,10 +96,16 @@ define([
             WeatherService.getHourly($scope.preferences.location, function(data) {
                 resetArrays();
                 var now = new Date();
-                _.each(data.hourly_forecast, function(hourlyForecast) {
+                var offset;
+                _.each(data.hourly_forecast, function(hourlyForecast, i) {
                     var wd = new WeatherData(hourlyForecast, "forecast");
-                    // excluding the first if it's less than half an hour in the future since that's not extremely useful
-                    if (wd.date.getTime() - now.getTime() > 30 * 60 * 1000) {
+                    if (i === 0) {
+                        // excluding the first if it's less than half an hour in the future since that's not extremely useful
+                        var keepFirst = wd.date.getTime() - now.getTime() > 30 * 60 * 1000;
+                        offset = keepFirst ? 1 : 0;
+                        if (!keepFirst) { return; }
+                    }
+                    if ((i + offset) % $scope.preferences.hourlyInterval === 0) {
                         $scope.hourlyModeData.push(wd);
                     }
                 });

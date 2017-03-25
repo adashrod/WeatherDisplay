@@ -50,8 +50,6 @@ button {
     border-width: 2px;
     border-style: solid;
     border-color: #008;
-/*    border-color: #ccc #555 #555 #ccc;
-    border-radius: 5px;*/
 
     padding: 5px;
 
@@ -117,7 +115,7 @@ button {
     padding: 5px;
 }
 
-#preferences-modal input[type="text"] {
+#preferences-modal input[type="text"], input[type="number"] {
     font-size: 3vw;
 }
 
