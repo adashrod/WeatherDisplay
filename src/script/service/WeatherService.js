@@ -70,13 +70,16 @@ define([
             });
             resetBatch();
         }, function(error) {
+            // annoying edge case: with at least some client errors, the API responds with a useful JSON error, but
+            // changes the Access-Control-Allow-Origin header to http://www.wunderground.com instead of *, causing the
+            // browser to not parse the response, and error.data will be null
             _.each(callbackRegistry, function(callbackList, featureName) {
                 var propNamesToUse = featureToPropertyMap[featureName] || [featureName];
                 _.each(callbackList, function(callbackPair) {
                     if (error.data) {
                         callbackPair.error(error.data.response && error.data.response.error || error.data);
                     } else {
-                        callbackPair.error("Got error code: " + error.status + ", but no data back from API");
+                        callbackPair.error("Got error code: " + error.status + ", but no data back from API (check headers)");
                     }
                 });
             });
