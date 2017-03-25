@@ -60,6 +60,10 @@ define([
         }
 
         function getData() {
+            if (!$scope.preferences.location) {
+                alert("You must open preferences and specify a location");
+                return;
+            }
             var didReset = false;
             /**
              * Clears the data in the arrays, assuring that they only get cleared once. Called from inside the AJAX
