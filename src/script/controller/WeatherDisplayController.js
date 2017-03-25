@@ -58,7 +58,10 @@ define([
             prefChangeRefreshDataPromise = $timeout(_.compose(getData, saveConfig), 2000);
         }
         $scope.$watch("preferences.location", onPrefsChangeRefreshData);
-        $scope.$watch("preferences.hourlyInterval", onPrefsChangeRefreshData);
+        function ensurePositive(newVal, oldVal) {
+            if (newVal <= 0) { $scope.preferences.hourlyInterval = oldVal > 0 ? oldVal : 1; }
+        }
+        $scope.$watch("preferences.hourlyInterval", _.compose(onPrefsChangeRefreshData, ensurePositive));
 
         $scope.hourlyModeData = [];
         $scope.dayModeData = [];
