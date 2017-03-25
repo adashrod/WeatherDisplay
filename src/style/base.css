@@ -1,30 +1,41 @@
+/***** general *****/
 body {
-    font-family: Arial, sans-serif
+    font-family: Arial, sans-serif;
+    font-size: 3vw;
 }
 
-#location {
-    text-align: center;
+button {
+    font-size: 3vw;
+}
+
+.row { display: table-row; }
+
+/* clear fix */
+.float-group > * { float: left; }
+
+.float-group:after {
+    content: "";
+    display: table;
+    clear: both;
 }
 
 .no-data {
     visibility: hidden;
 }
 
-.tile {
-    margin: 5px;
+/***** page-level *****/
+#location, .mode-label { text-align: center; }
 
-    border-width: 2px;
-    border-style: solid;
-    border-color: #ccc #555 #555 #ccc;
-    border-radius: 5px;
+/***** weather page *****/
+.weather-page .date { text-align: center; }
 
-    padding: 5px;
-}
+.weather-page .icon { width: 25%; }
 
-.header {
-    border-bottom: 2px solid #ccc;
-}
+.weather-page .current-container { width: 75%; }
 
+.weather-page .buttons { text-align: center; }
+
+/***** preferences *****/
 #modal-background {
     position: fixed;
     top: 0;
@@ -56,12 +67,38 @@ body {
     background: #fff;
 }
 
-.close {
+#preferences-modal .close {
     position: absolute;
-    top: 5px;
-    right: 5px;
+    top: 1vw;
+    right: 1vw;
 
-    font-size: 40px;
+    font-size: 6vw;
 
     cursor: pointer;
+}
+
+#preferences-modal .category { text-align: center; }
+
+#preferences-modal .prefs-group {
+    margin: 5px;
+
+    border-width: 2px;
+    border-style: solid;
+    border-color: #ccc #555 #555 #ccc;
+    border-radius: 5px;
+
+    padding: 5px;
+}
+
+#preferences-modal input[type="text"] {
+    font-size: 3vw;
+}
+
+#preferences-modal input[type="checkbox"], input[type="radio"] {
+    width: 3vw;
+    height: 3vw;
+}
+
+#preferences-modal .units label, #preferences-modal .units input {
+    display: table-cell;
 }

@@ -1,63 +1,66 @@
-<div ng-repeat="d in data" ng-show="$index === currentPage">
-    <br/>
-    <div ng-if="dateType === 'days'">
+<div ng-repeat="d in data" ng-show="$index === currentPage" class="weather-page">
+    <div class="date" ng-if="dateType === 'days'">
         <div ng-if="d.date.getDate() === now.getDate()">Today</div>
         <div ng-if="d.date.getDate() + 1 === now.getDate()">Yesterday</div>
         <div ng-if="d.date.getDate() - 1 === now.getDate()">Tomorrow</div>
         <div ng-if="d.date.getDate() - 2 === now.getDate()">Day after tomorrow</div>
         <div ng-if="d.date.getDate() - 3 >= now.getDate()">{{d.date.getDate() - now.getDate()}} days from now</div>
     </div>
-    <div ng-if="dateType === 'hours'"><!-- todo: can probably get rid of WeatherData.type now. do it? -->
+    <div class="date" ng-if="dateType === 'hours'">
         <div ng-if="d.hoursFromNow === 0">Current conditions</div>
-        <div ng-if="d.hoursFromNow > 0">{{d.hoursFromNow}} hour(s) from now</div>
+        <div ng-if="d.hoursFromNow > 0">{{d.hoursFromNow}} hour{{d.hoursFromNow !== 1 ? "s" : ""}} from now</div>
     </div>
-    <img ng-src="{{d.icon}}"/>
-    <br/>
-    <div class="temperature current-actual" ng-class="{'no-data':!d.temperature.current.actual}">
-        <span>Current</span>
-        <span ng-repeat="sys in currentUnitSystems">
-            <span>{{d.temperature.current.actual[sys] | truncatedFloat : 2}} {{unitNamesBySystem.temperature[sys]}}</span>
-            <span ng-if="!$last" class="units-separator"> / </span>
-        </span>
-    </div>
-    <div class="wind" ng-class="{'no-data': !d.wind}">
-        <span>Wind</span>
-        <div ng-class="{'no-data': !d.wind.summary}">{{d.wind.summary}}&nbsp;</div><!--todo: use CSS to set the size of this div instead of relying on nbsp to give it height-->
-        <span ng-repeat="sys in currentUnitSystems" ng-class="{'no-data': !d.wind.speed}">
-            <span>{{d.wind.speed[sys] | truncatedFloat : 1}} {{unitNamesBySystem.speed[sys]}}</span>
-            <span ng-if="!$last" class="units-separator"> / </span>
-        </span>
-        <span ng-class="{'no-data': !d.wind.direction}"> {{d.wind.direction}}</span>
-    </div>
-    <div class="temperature current-feels-like" ng-class="{'no-data':!d.temperature.current.feelsLike}">
-        <span>Feels like</span>
-        <span ng-repeat="sys in currentUnitSystems">
-            <span>{{d.temperature.current.feelsLike[sys] | truncatedFloat : 2}} {{unitNamesBySystem.temperature[sys]}}</span>
-            <span ng-if="!$last" class="units-separator"> / </span>
-        </span>
+    <div class="float-group">
+        <img class="icon" ng-src="{{d.icon}}"/>
+        <div class="current-container">
+            <div class="temperature current-actual" ng-class="{'no-data':!d.temperature.current.actual}">
+                <span ng-repeat="sys in currentUnitSystems">
+                    <span class="{{sys}}">{{d.temperature.current.actual[sys] | truncatedFloat : 2}} {{unitNamesBySystem.temperature[sys]}}</span>
+                    <span ng-if="!$last" class="units-separator"> / </span>
+                </span>
+            </div>
+            <div class="wind" ng-class="{'no-data': !d.wind}">
+                <span class="label">Wind</span>
+                <span ng-repeat="sys in currentUnitSystems" class="wind-speed" ng-class="{'no-data': !d.wind.speed}">
+                    <span class="{{sys}}">{{d.wind.speed[sys] | truncatedFloat : 1}} {{unitNamesBySystem.speed[sys]}}</span>
+                    <span ng-if="!$last" class="units-separator"> / </span>
+                </span>
+                <span ng-class="{'no-data': !d.wind.direction}"> {{d.wind.direction}}</span>
+                <div ng-class="{'no-data': !d.wind.summary}" class="wind-summary">{{d.wind.summary}}</div>
+            </div>
+            <div class="temperature current-feels-like" ng-class="{'no-data':!d.temperature.current.feelsLike}">
+                <span class="label">Feels like</span>
+                <span ng-repeat="sys in currentUnitSystems">
+                    <span class="{{sys}}">{{d.temperature.current.feelsLike[sys] | truncatedFloat : 2}} {{unitNamesBySystem.temperature[sys]}}</span>
+                    <span ng-if="!$last" class="units-separator"> / </span>
+                </span>
+            </div>
+        </div>
     </div>
     <div class="temperature low" ng-class="{'no-data':!d.temperature.low}">
-        <span>Low</span>
+        <span class="label">Low</span>
         <span ng-repeat="sys in currentUnitSystems">
-            <span>{{d.temperature.low[sys] | truncatedFloat : 2}} {{unitNamesBySystem.temperature[sys]}}</span>
+            <span class="{{sys}}">{{d.temperature.low[sys] | truncatedFloat : 2}} {{unitNamesBySystem.temperature[sys]}}</span>
             <span ng-if="!$last" class="units-separator"> / </span>
         </span>
     </div>
     <div class="temperature high" ng-class="{'no-data':!d.temperature.high}">
-        <span>High</span>
+        <span class="label">High</span>
         <span ng-repeat="sys in currentUnitSystems">
-            <span>{{d.temperature.high[sys] | truncatedFloat : 2}} {{unitNamesBySystem.temperature[sys]}}</span>
+            <span class="{{sys}}">{{d.temperature.high[sys] | truncatedFloat : 2}} {{unitNamesBySystem.temperature[sys]}}</span>
             <span ng-if="!$last" class="units-separator"> / </span>
         </span>
     </div>
     <div class="temperature average" ng-class="{'no-data':!d.temperature.average}">
-        <span>Average</span>
+        <span class="label">Average</span>
         <span ng-repeat="sys in currentUnitSystems">
-            <span>{{d.temperature.average[sys] | truncatedFloat : 2}} {{unitNamesBySystem.temperature[sys]}}</span>
+            <span class="{{sys}}">{{d.temperature.average[sys] | truncatedFloat : 2}} {{unitNamesBySystem.temperature[sys]}}</span>
             <span ng-if="!$last" class="units-separator"> / </span>
         </span>
     </div>
-    <button ng-click="previousPage()" ng-disabled="!hasPrevious()">prev</button>
-    <button ng-click="switchView()">Switch</button>
-    <button ng-click="nextPage()" ng-disabled="!hasNext()">next</button>
+    <div class="buttons">
+        <button class="previous-page" ng-click="previousPage()" ng-disabled="!hasPrevious()">prev</button>
+        <button class="view-switch" ng-click="switchView()">mode</button>
+        <button class="next-page" ng-click="nextPage()" ng-disabled="!hasNext()">next</button>
+    </div>
 </div>
