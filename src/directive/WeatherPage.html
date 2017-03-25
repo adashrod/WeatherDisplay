@@ -1,9 +1,16 @@
 <div ng-repeat="d in data" ng-show="$index === currentPage">
     <br/>
-    Date: {{d.date}}
-    <br/>
-    Type: {{d.type}}
-    <br/>
+    <div ng-if="dateType === 'days'">
+        <div ng-if="d.date.getDate() === now.getDate()">Today</div>
+        <div ng-if="d.date.getDate() + 1 === now.getDate()">Yesterday</div>
+        <div ng-if="d.date.getDate() - 1 === now.getDate()">Tomorrow</div>
+        <div ng-if="d.date.getDate() - 2 === now.getDate()">Day after tomorrow</div>
+        <div ng-if="d.date.getDate() - 3 >= now.getDate()">{{d.date.getDate() - now.getDate()}} days from now</div>
+    </div>
+    <div ng-if="dateType === 'hours'"><!-- todo: can probably get rid of WeatherData.type now. do it? -->
+        <div ng-if="d.hoursFromNow === 0">Current conditions</div>
+        <div ng-if="d.hoursFromNow > 0">{{d.hoursFromNow}} hour(s) from now</div>
+    </div>
     <img ng-src="{{d.icon}}"/>
     <br/>
     <div class="temperature current-actual" ng-class="{'no-data':!d.temperature.current.actual}">

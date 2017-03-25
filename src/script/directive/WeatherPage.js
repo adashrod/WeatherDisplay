@@ -1,4 +1,8 @@
-define(function() {
+define([
+    "underscore"
+], function(
+    _
+) {
     /**
      * WeatherPage is a display for various kinds of weather data found in WeatherData objects.
      * @attr data                 an array of WeatherData objects, each one will be placed into a page, with buttons
@@ -23,6 +27,14 @@ define(function() {
                 }
             };
 
+            $scope.$watch("data", function(newVal, oldVal) {
+                $scope.now = new Date();
+                _.each(newVal, function(wd) {
+                    // rounding with a resolution of .5
+                    wd.hoursFromNow = Math.round(2 * (wd.date.getTime() - $scope.now.getTime()) / (60 * 60 * 1000)) / 2;
+                });
+            });
+
             $scope.previousPage = function() {
                 if ($scope.currentPage > 0) { $scope.currentPage--; }
             };
@@ -39,7 +51,8 @@ define(function() {
             scope: {
                 data: "=",
                 currentUnitSystems: "=",
-                switchView: "="
+                switchView: "=",
+                dateType: "="
             },
             templateUrl: "directive/WeatherPage.html",
             controller: WeatherPageController

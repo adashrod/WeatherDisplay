@@ -83,8 +83,13 @@ define([
             }, _.partial(handleError, "conditions"));
             WeatherService.getHourly($scope.preferences.location, function(data) {
                 resetArrays();
+                var now = new Date();
                 _.each(data.hourly_forecast, function(hourlyForecast) {
-                    $scope.hourlyModeData.push(new WeatherData(hourlyForecast, "forecast"));
+                    var wd = new WeatherData(hourlyForecast, "forecast");
+                    // excluding the first if it's less than half an hour in the future since that's not extremely useful
+                    if (wd.date.getTime() - now.getTime() > 30 * 60 * 1000) {
+                        $scope.hourlyModeData.push(wd);
+                    }
                 });
             }, _.partial(handleError, "hourly"));
             WeatherService.getForecast($scope.preferences.location, function(data) {
