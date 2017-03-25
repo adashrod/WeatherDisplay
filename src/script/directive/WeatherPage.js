@@ -43,6 +43,11 @@ define([
             };
             $scope.hasPrevious = function() { return $scope.currentPage > 0; }
             $scope.hasNext = function() { return $scope.currentPage < $scope.data.length - 1; }
+
+            $scope.onHomeClick = function() {
+                $scope.currentPage = 0;
+                $scope.goHome();
+            };
         }
         WeatherPageController.$inject = ["$scope"];
 
@@ -52,6 +57,7 @@ define([
                 data: "=",
                 currentUnitSystems: "=",
                 switchView: "=",
+                goHome: "=",
                 dateType: "="
             },
             templateUrl: "directive/WeatherPage.html",

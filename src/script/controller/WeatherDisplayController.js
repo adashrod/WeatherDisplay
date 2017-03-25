@@ -120,6 +120,8 @@ define([
             }
         };
 
+        $scope.resetView = function() { $scope.currentView = $scope.Views.HOURS; };
+
         $scope.toggleConfigModal = function() { $scope.showSettingsModal = !$scope.showSettingsModal; };
 
         loadConfig();

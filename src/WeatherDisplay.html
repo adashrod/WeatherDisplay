@@ -10,8 +10,10 @@
 <body ng-controller="WeatherDisplayController" ng-cloak="true">
     <div id="location">{{location.name}} {{location.zip}}</div>
     <div class="mode-label">{{currentView === Views.HOURS ? "Hourly Mode" : "Daily Mode"}}</div>
-    <weather-page id="hourly-mode" data="hourlyModeData" current-unit-systems="currentUnitSystems" date-type="'hours'" ng-show="currentView === Views.HOURS" switch-view="nextView"></weather-page>
-    <weather-page id="day-mode" data="dayModeData" current-unit-systems="currentUnitSystems" date-type="'days'" ng-show="currentView === Views.DAYS" switch-view="nextView"></weather-page>
+    <weather-page id="hourly-mode" data="hourlyModeData" current-unit-systems="currentUnitSystems" date-type="'hours'"
+                  ng-show="currentView === Views.HOURS" switch-view="nextView" go-home="resetView"></weather-page>
+    <weather-page id="day-mode" data="dayModeData" current-unit-systems="currentUnitSystems" date-type="'days'"
+                  ng-show="currentView === Views.DAYS" switch-view="nextView" go-home="resetView"></weather-page>
 
     <button ng-click="toggleConfigModal()">Preferences</button>
     <div id="modal-background" ng-show="showSettingsModal"></div>
