@@ -34,6 +34,9 @@ define([
                     wd.hoursFromNow = Math.round(2 * (wd.date.getTime() - $scope.now.getTime()) / (60 * 60 * 1000)) / 2;
                 });
             });
+            $scope.$watch("data.length", function(newVal, oldVal) {
+                if ($scope.currentPage >= newVal) { $scope.currentPage = 0; }
+            });
 
             $scope.previousPage = function() {
                 if ($scope.currentPage > 0) { $scope.currentPage--; }
