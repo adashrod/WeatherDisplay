@@ -19,7 +19,7 @@ define([
             restrict: "E",
             transclude: true,
             scope: {},
-            template: "<span style=\"position:relative\"><span title=\"help\" class=\"help-toggle\" ng-click=\"toggle()\">[?]</span><div ng-transclude=\"ng-transclude\" ng-show=\"visible\" class=\"help-modal\"></div></span>",
+            templateUrl: "directive/HelpModal.html",
             controller: HelpModalController
         };
     }

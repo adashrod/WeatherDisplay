@@ -36,6 +36,11 @@ button {
 .weather-page .buttons { text-align: center; }
 
 /***** help modal directive *****/
+.help-container {
+    position: relative;
+    display: inline-block;
+}
+
 .help-toggle {
     color: #bbb;
     cursor: pointer;
@@ -132,3 +137,5 @@ button {
     color: #777;
     font-style: italic;
 }
+
+#preferences-modal .right-side .help-modal { right: 0; }
