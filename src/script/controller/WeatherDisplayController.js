@@ -65,6 +65,8 @@ define([
 
         $scope.hourlyModeData = [];
         $scope.dayModeData = [];
+        $scope.hourlyModeApi = {};
+        $scope.dayModeApi = {};
 
         function handleError(feature, error) {
             console.error("Error in " + feature + " call:", error);
@@ -129,7 +131,7 @@ define([
             $timeout(getData, interval);
         }
 
-        $scope.nextView = function() {
+        $scope.switchView = function() {
             if ($scope.currentView === $scope.Views.DAYS) {
                 $scope.currentView = $scope.Views.HOURS;
             } else {
@@ -137,9 +139,41 @@ define([
             }
         };
 
-        $scope.resetView = function() { $scope.currentView = $scope.Views.HOURS; };
-
+        $scope.resetView = function() {
+            $scope.currentView = $scope.Views.HOURS;
+            if (typeof $scope.hourlyModeApi.goToPage === "function") { $scope.hourlyModeApi.goToPage(0); }
+            if (typeof $scope.dayModeApi.goToPage === "function") { $scope.dayModeApi.goToPage(0); }
+        };
         $scope.toggleConfigModal = function() { $scope.showSettingsModal = !$scope.showSettingsModal; };
+
+        $scope.previousPage = function() {
+            if ($scope.currentView === $scope.Views.HOURS) {
+                return $scope.hourlyModeApi.previousPage && $scope.hourlyModeApi.previousPage() || false;
+            } else {
+                return $scope.dayModeApi.previousPage && $scope.dayModeApi.previousPage() || false;
+            }
+        };
+        $scope.nextPage = function() {
+            if ($scope.currentView === $scope.Views.HOURS) {
+                return $scope.hourlyModeApi.nextPage && $scope.hourlyModeApi.nextPage() || false;
+            } else {
+                return $scope.dayModeApi.nextPage && $scope.dayModeApi.nextPage() || false;
+            }
+        };
+        $scope.hasPrevious = function() {
+            if ($scope.currentView === $scope.Views.HOURS) {
+                return $scope.hourlyModeApi.hasPrevious && $scope.hourlyModeApi.hasPrevious() || false;
+            } else {
+                return $scope.dayModeApi.hasPrevious && $scope.dayModeApi.hasPrevious() || false;
+            }
+        };
+        $scope.hasNext = function() {
+            if ($scope.currentView === $scope.Views.HOURS) {
+                return $scope.hourlyModeApi.hasNext && $scope.hourlyModeApi.hasNext() || false;
+            } else {
+                return $scope.dayModeApi.hasNext && $scope.dayModeApi.hasNext() || false;
+            }
+        };
 
         loadConfig();
         getData();

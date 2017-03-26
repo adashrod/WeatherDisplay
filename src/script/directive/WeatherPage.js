@@ -38,19 +38,20 @@ define([
                 if ($scope.currentPage >= newVal) { $scope.currentPage = 0; }
             });
 
-            $scope.previousPage = function() {
-                if ($scope.currentPage > 0) { $scope.currentPage--; }
-            };
-            $scope.nextPage = function() {
-                if ($scope.currentPage < $scope.data.length - 1) { $scope.currentPage++; }
-            };
-            $scope.hasPrevious = function() { return $scope.currentPage > 0; }
-            $scope.hasNext = function() { return $scope.currentPage < $scope.data.length - 1; }
+            if ($scope.api) {
+                $scope.api.previousPage = function() {
+                    if ($scope.currentPage > 0) { $scope.currentPage--; }
+                };
+                $scope.api.nextPage = function() {
+                    if ($scope.currentPage < $scope.data.length - 1) { $scope.currentPage++; }
+                };
+                $scope.api.hasPrevious = function() { return $scope.currentPage > 0; };
+                $scope.api.hasNext = function() { return $scope.currentPage < $scope.data.length - 1; };
+                $scope.api.goToPage = function(page) {
+                    if (page >= 0 && page < $scope.data.length) { $scope.currentPage = page; }
+                };
+            }
 
-            $scope.onHomeClick = function() {
-                $scope.currentPage = 0;
-                $scope.goHome();
-            };
         }
         WeatherPageController.$inject = ["$scope"];
 
@@ -59,8 +60,7 @@ define([
             scope: {
                 data: "=",
                 currentUnitSystems: "=",
-                switchView: "=",
-                goHome: "=",
+                api: "=",
                 dateType: "="
             },
             templateUrl: "directive/WeatherPage.html",
