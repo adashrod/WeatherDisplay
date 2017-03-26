@@ -30,20 +30,24 @@
             <div class="row">
                 <label for="imperial-checkbox">Imperial</label>
                 <input id="imperial-checkbox" type="checkbox" ng-model="preferences.showImperial"/>
+                <help-modal>The system of the British Empire, still in use only in the US (temperature in Fahrenheit, speed in miles per hour)</help-modal>
             </div>
             <div class="row">
                 <label for="metric-checkbox">Metric</label>
                 <input id="metric-checkbox" type="checkbox" ng-model="preferences.showMetric"/>
+                <help-modal>The decimal system in which everything is based on factors of ten (temperature in Celsius, speed in kilometers per hour)</help-modal>
             </div>
             <div class="row">
                 <label for="si-checkbox">SI</label>
                 <input id="si-checkbox" type="checkbox" ng-model="preferences.showSi"/>
+                <help-modal>Système International d'unités, or International System of Units, used for scientific measurements (temperature in Kelvin, speed in meters per second)</help-modal>
             </div>
         </div>
         <div class="category">Data</div>
         <div class="data prefs-group">
             <label for="hourly-interval">Hourly forecast interval</label>
             <input id="hourly-interval" type="number" ng-model="preferences.hourlyInterval"/>
+            <help-modal>When displaying the hourly forecast, this determines what granularity of the forecast to show, e.g. every hour, every two hours, etc</help-modal>
         </div>
     </div>
 </body>
