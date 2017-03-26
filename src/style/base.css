@@ -33,7 +33,7 @@ button {
 
 .weather-page .current-container { width: 75%; }
 
-.weather-page .buttons { text-align: center; }
+.buttons { text-align: center; }
 
 /***** help modal directive *****/
 .help-container {
