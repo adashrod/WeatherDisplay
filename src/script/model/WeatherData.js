@@ -3,6 +3,8 @@ define([
 ], function(
     _
 ) {
+    var iconPattern = /https?:\/\/icons.wxug.com\/i\/c\/\w+\/(\w+).gif/;
+
     /**
      * A container for temperature and wind data. Properties include
      * temperature (TemperatureData)
@@ -19,7 +21,8 @@ define([
         var _icon = null, _summary = null, _type = type.toString(), _date = null;
         // conditions, forecast, hourly forecast
         if (rawData.icon_url) {
-            _icon = rawData.icon_url;
+            var m = rawData.icon_url.match(iconPattern);
+            if (m) { _icon = "https://icons.wxug.com/i/c/v4/" + m[1] + ".svg"; }
         }
         // forecast
         if (rawData.date && rawData.date.epoch) {
@@ -69,7 +72,7 @@ define([
                     if (_.isArray(rawData)) {
                         _populateConditions(rawData);
                         var iconName = chooseMostFrequentConditions(sortedIcons, "iconName", 2, 1)[0];
-                        _icon = "https://icons.wxug.com/i/c/k/" + iconName + ".gif";
+                        _icon = "https://icons.wxug.com/i/c/v4/" + iconName + ".svg";
                     }
                 }
             },
