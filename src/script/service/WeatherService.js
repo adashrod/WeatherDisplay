@@ -53,7 +53,11 @@ define([
         var url = apiBaseUrl + apiKey + "/" + batchCalls.join("/") + "/q/" + currentLocation + ".json";
         $http.get(url).then(function(response) {
             _.each(callbackRegistry, function(callbackList, featureName) {
-                var propNamesToUse = featureToPropertyMap[featureName] || [featureName];
+                var featureNameWithoutDates = featureName, match;
+                if (match = featureNameWithoutDates.match(/(history|planner)_\d{8}/)) {
+                    featureNameWithoutDates = match[1];
+                }
+                var propNamesToUse = featureToPropertyMap[featureNameWithoutDates] || [featureNameWithoutDates];
                 _.each(callbackList, function(callbackPair) {
                     var callbackData = {};
                     if (response.data) {
@@ -74,7 +78,11 @@ define([
             // changes the Access-Control-Allow-Origin header to http://www.wunderground.com instead of *, causing the
             // browser to not parse the response, and error.data will be null
             _.each(callbackRegistry, function(callbackList, featureName) {
-                var propNamesToUse = featureToPropertyMap[featureName] || [featureName];
+                var featureNameWithoutDates = featureName, match;
+                if (match = featureNameWithoutDates.match(/(history|planner)_\d{8}/)) {
+                    featureNameWithoutDates = match[1];
+                }
+                var propNamesToUse = featureToPropertyMap[featureNameWithoutDates] || [featureNameWithoutDates];
                 _.each(callbackList, function(callbackPair) {
                     if (error.data) {
                         callbackPair.error(error.data.response && error.data.response.error || error.data);
@@ -133,8 +141,16 @@ define([
         enqueueCallForBatch("geolookup", location, success, error);
     };
 
-    WeatherServiceSingleton.getHistory = function(location, success, error) {
-        enqueueCallForBatch("history", location, success, error);
+    WeatherServiceSingleton.getHistory = function(location, date, success, error) {
+        var dateString;
+        if (typeof date === "string") {
+            dateString = date;
+        } else if (Object.prototype.toString.call(date) === "[object Date]") {
+            dateString = date.getUTCFullYear().toString() + padWithZero(date.getUTCMonth() + 1) + padWithZero(date.getUTCDate());
+        } else {
+            throw new Error("2nd argument to getHistory must be a Date or a string, formatted \"YYYYMMDD\"");
+        }
+        enqueueCallForBatch("history_" + dateString, location, success, error);
     };
 
     WeatherServiceSingleton.getHourly = function(location, success, error) {
@@ -145,8 +161,23 @@ define([
         enqueueCallForBatch("hourly10day", location, success, error);
     };
 
-    WeatherServiceSingleton.getPlanner = function(location, success, error) {
-        enqueueCallForBatch("planner", location, success, error);
+    WeatherServiceSingleton.getPlanner = function(location, dateStart, dateEnd, success, error) {
+        var dateStartString, dateEndString;
+        if (typeof dateStart === "string") {
+            dateStartString = dateStart;
+        } else if (Object.prototype.toString.call(dateStart) === "[object Date]") {
+            dateStartString = padWithZero(dateStart.getUTCMonth() + 1) + padWithZero(dateStart.getUTCDate());
+        } else {
+            throw new Error("2nd argument to getPlanner must be either a Date or a string, formatted \"MMDD\"");
+        }
+        if (typeof dateEnd === "string") {
+            dateEndString = dateEnd;
+        } else if (Object.prototype.toString.call(dateEnd) === "[object Date]") {
+            dateEndString = padWithZero(dateEnd.getUTCMonth() + 1) + padWithZero(dateEnd.getUTCDate());
+        } else {
+            throw new Error("2nd argument to getPlanner must be either a Date or a string, formatted \"MMDD\"");
+        }
+        enqueueCallForBatch("planner_" + dateStartString + dateEndString, location, success, error);
     };
 
     WeatherServiceSingleton.getRawTide = function(location, success, error) {
@@ -168,6 +199,11 @@ define([
     WeatherServiceSingleton.getYesterday = function(location, success, error) {
         enqueueCallForBatch("yesterday", location, success, error);
     };
+
+    function padWithZero(number) {
+        if (number < 10) { return "0" + number; }
+        return number.toString();
+    }
 
     Object.defineProperties(WeatherServiceSingleton, {
         $http: {
