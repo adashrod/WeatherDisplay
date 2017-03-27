@@ -1,0 +1,30 @@
+/***** general *****/
+button { font-size: 6vw; }
+
+/***** page-level *****/
+#location { margin-bottom: 8vw; }
+
+.preferences-button {
+    top: 5px;
+    left: 5px;
+}
+
+/***** weather page directive *****/
+.weather-page .icon-container {
+    float: none;
+    text-align: center;
+}
+
+.weather-page .icon { width: 50%; }
+
+.weather-page .primary-temperatures {
+    float: none;
+    text-align: center;
+    height: 30vh;
+}
+
+.weather-page .primary-temperatures .first,
+.weather-page .primary-temperatures .second {
+    font-size: 9vw;
+    float: none;
+}

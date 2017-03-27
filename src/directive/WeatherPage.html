@@ -11,51 +11,71 @@
         <div ng-if="d.hoursFromNow > 0">{{d.hoursFromNow}} hour{{d.hoursFromNow !== 1 ? "s" : ""}} from now</div>
     </div>
     <div class="float-group">
-        <img class="icon" ng-src="{{d.icon}}"/>
-        <div class="current-container">
-            <div class="temperature current-actual" ng-class="{'no-data':!d.temperature.current.actual}">
+        <div class="icon-container">
+            <img class="icon" ng-src="{{d.icon}}"/>
+        </div>
+        <div class="primary-temperatures float-group">
+            <!-- this pad is used to push div.first down if div.second is absent -->
+            <div class="top-pad" ng-if="d.temperature.average || !d.temperature.high"></div>
+            <div class="first temperature average" ng-if="d.temperature.average">
+                <span class="label">Avg</span>
                 <span ng-repeat="sys in currentUnitSystems">
-                    <span class="{{sys}}">{{d.temperature.current.actual[sys] | truncatedFloat : 2}} {{unitNamesBySystem.temperature[sys]}}</span>
+                    <span class="{{sys}}">{{d.temperature.average[sys] | truncatedFloat : 2}}&nbsp;{{unitNamesBySystem.temperature[sys]}}</span>
                     <span ng-if="!$last" class="units-separator"> / </span>
                 </span>
             </div>
-            <div class="wind" ng-class="{'no-data': !d.wind}">
-                <span class="label">Wind</span>
-                <span ng-repeat="sys in currentUnitSystems" class="wind-speed" ng-class="{'no-data': !d.wind.speed}">
-                    <span class="{{sys}}">{{d.wind.speed[sys] | truncatedFloat : 1}} {{unitNamesBySystem.speed[sys]}}</span>
+            <div class="first temperature low" ng-if="!d.temperature.average && d.temperature.low">
+                <span class="label">Low</span>
+                <span ng-repeat="sys in currentUnitSystems">
+                    <span class="{{sys}}">{{d.temperature.low[sys] | truncatedFloat : 2}}&nbsp;{{unitNamesBySystem.temperature[sys]}}</span>
                     <span ng-if="!$last" class="units-separator"> / </span>
                 </span>
-                <span ng-class="{'no-data': !d.wind.direction}"> {{d.wind.direction}}</span>
-                <div ng-class="{'no-data': !d.wind.summary}" class="wind-summary">{{d.wind.summary}}</div>
             </div>
-            <div class="temperature current-feels-like" ng-class="{'no-data':!d.temperature.current.feelsLike}">
-                <span class="label">Feels like</span>
+            <div class="first temperature current-actual" ng-if="d.temperature.current">
                 <span ng-repeat="sys in currentUnitSystems">
-                    <span class="{{sys}}">{{d.temperature.current.feelsLike[sys] | truncatedFloat : 2}} {{unitNamesBySystem.temperature[sys]}}</span>
+                    <span class="{{sys}}">{{d.temperature.current.actual[sys] | truncatedFloat : 2}}&nbsp;{{unitNamesBySystem.temperature[sys]}}</span>
+                    <span ng-if="!$last" class="units-separator"> / </span>
+                </span>
+            </div>
+            <div class="second temperature high" ng-if="!d.temperature.average && d.temperature.high">
+                <span class="label">High</span>
+                <span ng-repeat="sys in currentUnitSystems">
+                    <span class="{{sys}}">{{d.temperature.high[sys] | truncatedFloat : 2}}&nbsp;{{unitNamesBySystem.temperature[sys]}}</span>
                     <span ng-if="!$last" class="units-separator"> / </span>
                 </span>
             </div>
         </div>
     </div>
-    <div class="temperature low" ng-class="{'no-data':!d.temperature.low}">
-        <span class="label">Low</span>
-        <span ng-repeat="sys in currentUnitSystems">
-            <span class="{{sys}}">{{d.temperature.low[sys] | truncatedFloat : 2}} {{unitNamesBySystem.temperature[sys]}}</span>
-            <span ng-if="!$last" class="units-separator"> / </span>
-        </span>
+    <div class="secondary-temperatures float-group">
+        <div class="first temperature low" ng-if="d.temperature.average">
+            <span class="label">Low</span>
+            <span ng-repeat="sys in currentUnitSystems">
+                <span class="{{sys}}">{{d.temperature.low[sys] | truncatedFloat : 2}}&nbsp;{{unitNamesBySystem.temperature[sys]}}</span>
+                <span ng-if="!$last" class="units-separator"> / </span>
+            </span>
+        </div>
+        <div class="first temperature current-feels-like" ng-if="d.temperature.current">
+            <span class="label">Feels like</span>
+            <span ng-repeat="sys in currentUnitSystems">
+                <span class="{{sys}}">{{d.temperature.current.feelsLike[sys] | truncatedFloat : 2}}&nbsp;{{unitNamesBySystem.temperature[sys]}}</span>
+                <span ng-if="!$last" class="units-separator"> / </span>
+            </span>
+        </div>
+        <div class="second temperature high" ng-if="d.temperature.average">
+            <span class="label">High</span>
+            <span ng-repeat="sys in currentUnitSystems">
+                <span class="{{sys}}">{{d.temperature.high[sys] | truncatedFloat : 2}}&nbsp;{{unitNamesBySystem.temperature[sys]}}</span>
+                <span ng-if="!$last" class="units-separator"> / </span>
+            </span>
+        </div>
     </div>
-    <div class="temperature high" ng-class="{'no-data':!d.temperature.high}">
-        <span class="label">High</span>
-        <span ng-repeat="sys in currentUnitSystems">
-            <span class="{{sys}}">{{d.temperature.high[sys] | truncatedFloat : 2}} {{unitNamesBySystem.temperature[sys]}}</span>
+    <div class="wind" ng-class="{'no-data': !d.wind}">
+        <span class="label">Wind</span>
+        <span ng-repeat="sys in currentUnitSystems" class="wind-speed" ng-class="{'no-data': !d.wind.speed}">
+            <span class="{{sys}}">{{d.wind.speed[sys] | truncatedFloat : 1}}&nbsp;{{unitNamesBySystem.speed[sys]}}</span>
             <span ng-if="!$last" class="units-separator"> / </span>
         </span>
-    </div>
-    <div class="temperature average" ng-class="{'no-data':!d.temperature.average}">
-        <span class="label">Average</span>
-        <span ng-repeat="sys in currentUnitSystems">
-            <span class="{{sys}}">{{d.temperature.average[sys] | truncatedFloat : 2}} {{unitNamesBySystem.temperature[sys]}}</span>
-            <span ng-if="!$last" class="units-separator"> / </span>
-        </span>
+        <span ng-class="{'no-data': !d.wind.direction}"> {{d.wind.direction}}</span>
+        <!--<div ng-class="{'no-data': !d.wind.summary}" class="wind-summary">{{d.wind.summary}}</div>-->
     </div>
 </div>
