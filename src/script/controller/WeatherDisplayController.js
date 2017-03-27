@@ -12,9 +12,8 @@ define([
     var interval = 10 * 60 * 1000; // 10 minutes
     var refreshPromise = null;
 
-    var WeatherDisplayController = function($scope, $window, $timeout, $http, $sce) {
+    var WeatherDisplayController = function($scope, $window, $timeout, $http) {
         WeatherService.$http = $http;
-        WeatherService.$sce = $sce;
         WeatherService.apiKey = AppConfig.apiKey;
 
         $scope.showSettingsModal = false;
@@ -178,7 +177,7 @@ define([
         loadConfig();
         getData();
     };
-    WeatherDisplayController.$inject = ["$scope", "$window", "$timeout", "$http", "$sce"];
+    WeatherDisplayController.$inject = ["$scope", "$window", "$timeout", "$http"];
 
     return WeatherDisplayController;
 });

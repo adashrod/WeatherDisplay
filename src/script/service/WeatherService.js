@@ -25,7 +25,6 @@ define([
     var apiBaseUrl = "http://api.wunderground.com/api/";
     // these 3 need to be injected by callers
     var $http = null;
-    var $sce = null;
     var apiKey = null;
 
     // zip code, country & city, US state & city, etc. See WU for more
@@ -209,11 +208,6 @@ define([
         $http: {
             set: function(h) {
                 $http = h;
-            }
-        },
-        $sce: {
-            set: function(s) {
-                $sce = s;
             }
         },
         apiKey: {
