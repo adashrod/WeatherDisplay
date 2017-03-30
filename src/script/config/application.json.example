@@ -1,3 +1,6 @@
 {
-    "apiKey": "........."
+    "apiKey": ".........",
+    "NOTE": "the following two are only needed for persistent storage of preferences in browsers that don't persist local storage data between sessions",
+    "keyValueServerHost": "keyvalueserver.com",
+    "keyValueApiPath": "/keyValue"
 }

@@ -15,6 +15,9 @@ define([
     var WeatherDisplayController = function($scope, $window, $timeout, $http) {
         WeatherService.$http = $http;
         WeatherService.apiKey = AppConfig.apiKey;
+        var h = AppConfig.keyValueServerHost;
+        if (h.indexOf("http://") === -1 && h.indexOf("https://") === -1) { h = "http://" + AppConfig.keyValueServerHost; }
+        var kvApiPath = h + AppConfig.keyValueApiPath;
 
         $scope.showSettingsModal = false;
         $scope.Views = { DAYS: "days", HOURS: "hours" };
@@ -28,7 +31,9 @@ define([
         };
         $scope.currentUnitSystems = [];
         var localStorageKey = "weatherPreferences";
+        var waitingOnServerForConfig = false;
         function saveConfig() {
+            if (waitingOnServerForConfig) { return; }
             $window.localStorage.setItem(localStorageKey, JSON.stringify($scope.preferences));
             $scope.currentUnitSystems = [];
             _.each($scope.preferences, function(enabled, key) {
@@ -36,17 +41,42 @@ define([
                     $scope.currentUnitSystems.push(key.substring(4).toLowerCase());
                 }
             });
+            $http({
+                method: "POST",
+                url: kvApiPath + "/" + localStorageKey,
+                headers: {
+                    "Content-Type": "text/plain"
+                },
+                data: JSON.stringify($scope.preferences)
+            }).then(_.noop, console.error);
         }
         function loadConfig() {
-            try {
-                var s = $window.localStorage.getItem(localStorageKey);
-                if (s !== null && typeof s !== "undefined" && s !== "null") {
+            function readJsonIntoScope(jsonString) {
+                try {
                     // not just doing $scope.preferences = JSON.parse(s) because then things not present in local storage,
                     // i.e. new features that have never been persisted in this session, would get deleted from the scope
-                    var storedPrefs = JSON.parse(s);
+                    var storedPrefs = JSON.parse(jsonString);
                     _.each(storedPrefs, function(v, k) { $scope.preferences[k] = v; });
-                }
-            } catch (e) {}
+                } catch (e) {}
+            }
+            var s = $window.localStorage.getItem(localStorageKey);
+            if (s !== null && typeof s !== "undefined" && s !== "null") {
+                readJsonIntoScope(s);
+            } else {
+                waitingOnServerForConfig = true;
+                $http({
+                    method: "GET",
+                    url: kvApiPath + "/" + localStorageKey,
+                    transformResponse: [_.identity]
+                })
+                .then(function(response) {
+                    waitingOnServerForConfig = false;
+                    readJsonIntoScope(response.data);
+                }, function(error) {
+                    waitingOnServerForConfig = false;
+                    if (error.status !== 404) { console.error("Failed to load data from key-value store: " + error.data); }
+                });
+            }
         }
         $scope.$watch("preferences.showImperial", saveConfig);
         $scope.$watch("preferences.showMetric", saveConfig);
