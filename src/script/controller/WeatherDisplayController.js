@@ -103,7 +103,6 @@ define([
 
         function getData() {
             if (!$scope.preferences.location) {
-                alert("You must open preferences and specify a location");
                 return;
             }
             var didReset = false;
