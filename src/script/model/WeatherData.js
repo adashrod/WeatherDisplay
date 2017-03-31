@@ -34,9 +34,11 @@ define([
         if (_.isDate(date)) { _date = date; }
 
         // hourly forecast
-        if (rawData.condition) {
-            _summary = rawData.condition;
-        }
+        if (rawData.condition) { _summary = rawData.condition; }
+        // day forecast
+        if (rawData.conditions) { _summary = rawData.conditions; }
+        // conditions
+        if (rawData.weather) { _summary = rawData.weather; }
 
         // used by setIcon and setTextSummary for getting text and icon from aggregate data
         var sortedConds = [], sortedIcons = [];
