@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Weather</title>
-    <script src="script/lib/angular.js"></script>
-    <script src="script/lib/require.js" data-main="script/weatherDisplayConfig.js"></script>
+    <script src="script/lib/jquery-3.2.0.min.js" type="text/javascript"></script><!-- angular doesn't load on Kindle browser without this -->
+    <script src="script/lib/angular.js" type="text/javascript"></script>
+    <script src="script/lib/require.js" type="text/javascript" data-main="script/weatherDisplayConfig.js"></script>
     <link rel="stylesheet" type="text/css" href="style/base.css"/>
     <link rel="stylesheet" type="text/css" media="screen and (orientation:portrait)" href="style/portrait.css"/>
     <link rel="stylesheet" type="text/css" media="screen and (orientation:landscape)" href="style/landscape.css"/>
@@ -19,17 +20,16 @@
     <button class="preferences-button" ng-click="toggleConfigModal()"><img src="images/gear.png"/></button>
     <div class="controls">
         <div class="buttons">
-            <button class="home" ng-click="resetView()">&#x2302;</button>
+            <button class="home" ng-click="resetView()">&nbsp;&#x2302;&nbsp;</button>
             <button class="previous-page" ng-click="previousPage()" ng-disabled="!hasPrevious()">prev</button>
-            <button class="view-switch" ng-click="switchView()">mode</button>
+            <button class="view-switch" ng-click="switchView()">{{currentView === Views.HOURS ? "Hourly Mode" : "Daily Mode"}}</button>
             <button class="next-page" ng-click="nextPage()" ng-disabled="!hasNext()">next</button>
         </div>
-        <div class="mode-label">{{currentView === Views.HOURS ? "Hourly Mode" : "Daily Mode"}}</div>
     </div>
 
     <div id="modal-background" ng-show="showSettingsModal"></div>
     <div id="preferences-modal" ng-show="showSettingsModal">
-        <div class="close" ng-click="toggleConfigModal()">&times;</div>
+        <button class="close" ng-click="toggleConfigModal()">&nbsp;&times;&nbsp;</button>
         <div class="category">Location</div>
         <div class="location prefs-group">
             <label for="location-text">Zip/City</label>
