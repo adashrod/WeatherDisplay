@@ -169,9 +169,8 @@ define([
         };
 
         $scope.resetView = function() {
-            $scope.currentView = $scope.Views.HOURS;
             if (typeof $scope.hourlyModeApi.goToPage === "function") { $scope.hourlyModeApi.goToPage(0); }
-            if (typeof $scope.dayModeApi.goToPage === "function") { $scope.dayModeApi.goToPage(0); }
+            if (typeof $scope.dayModeApi.goToPage === "function") { $scope.dayModeApi.goToPage(1); }
         };
         $scope.toggleConfigModal = function() { $scope.showSettingsModal = !$scope.showSettingsModal; };
 
