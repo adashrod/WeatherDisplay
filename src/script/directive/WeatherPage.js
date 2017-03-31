@@ -28,6 +28,8 @@ define([
             };
 
             $scope.$watch("data", function(newVal, oldVal) {
+                getMidnightEpoch.cache = {};
+                $scope.getDayDifference.cache = {};
                 $scope.now = new Date();
                 _.each(newVal, function(wd) {
                     // rounding with a resolution of .5
@@ -37,6 +39,47 @@ define([
             $scope.$watch("data.length", function(newVal, oldVal) {
                 if ($scope.currentPage >= newVal) { $scope.currentPage = 0; }
             });
+
+            /**
+             * For a given date, returns the UTC epoch (in ms) of midnight of that day, e.g. (pseudocode)
+             * gME(Jan 4th 1pm) == Jan 4th 12am
+             * gME(Jan 4th 5pm) == Jan 4th 12am
+             * gME(Jan 4th 3am) == Jan 4th 12am
+             * @param {Date} date
+             * @return {Number} epoch, in ms, of midnight that day
+             */
+            function getMidnightEpoch(date) {
+                if (date.getTime() in getMidnightEpoch.cache) { return getMidnightEpoch.cache[date.getTime()]; }
+                var e = date.getTime() - (date.getMilliseconds() +
+                    1000 * date.getSeconds() +
+                    60 * 1000 * date.getMinutes() +
+                    60 * 60 * 1000 * date.getHours());
+                getMidnightEpoch.cache[date.getTime()] = e;
+                return e;
+            }
+            getMidnightEpoch.cache = {};
+
+            /**
+             * Given two dates, calculates the difference between them in days, regardless of what point in the days
+             * they are, e.g. (pseudocode)
+             * gDD(Jan 4th 12pm, Jan 6th 12pm) == 2
+             * gDD(Jan 4th 11pm, Jan 6th 1am) == 2
+             * gDD(Jan 4th 12pm, Jan 4th 5am) == 0
+             * gDD(Jan 5th 12pm, Jan 4th 12pm) == -1
+             * @param {Date} a
+             * @param {Date} b
+             * @return {Number} difference, in days, of b - a
+             */
+            $scope.getDayDifference = function(a, b) {
+                var key = a.getTime().toString() + "_" + b.getTime().toString();
+                if (key in $scope.getDayDifference.cache) { return $scope.getDayDifference.cache[key]; }
+                var aE = getMidnightEpoch(a), bE = getMidnightEpoch(b);
+                var msDiff = bE - aE;
+                var dayDiff = msDiff / (24 * 60 * 60 * 1000);
+                $scope.getDayDifference.cache[key] = dayDiff;
+                return dayDiff;
+            };
+            $scope.getDayDifference.cache = {};
 
             if ($scope.api) {
                 $scope.api.previousPage = function() {

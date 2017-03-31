@@ -1,15 +1,16 @@
 <div ng-repeat="d in data" ng-show="$index === currentPage" class="weather-page">
     <div class="date" ng-if="dateType === 'days'">
-        <div ng-if="d.date.getDate() === now.getDate()">Today</div>
-        <div ng-if="d.date.getDate() + 1 === now.getDate()">Yesterday</div>
-        <div ng-if="d.date.getDate() - 1 === now.getDate()">Tomorrow</div>
-        <div ng-if="d.date.getDate() - 2 === now.getDate()">Day after tomorrow</div>
-        <div ng-if="d.date.getDate() - 3 >= now.getDate()">{{d.date.getDate() - now.getDate()}} days from now</div>
+        <div ng-if="getDayDifference(now, d.date) === -1">Yesterday</div>
+        <div ng-if="getDayDifference(now, d.date) === 0">Today</div>
+        <div ng-if="getDayDifference(now, d.date) === 1">Tomorrow</div>
+        <div ng-if="getDayDifference(now, d.date) === 2">Day after tomorrow</div>
+        <div ng-if="getDayDifference(now, d.date) > 2">{{getDayDifference(now, d.date)}} days from now</div>
     </div>
     <div class="date" ng-if="dateType === 'hours'">
         <div ng-if="d.hoursFromNow === 0">Current conditions</div>
         <div ng-if="d.hoursFromNow > 0">{{d.hoursFromNow}} hour{{d.hoursFromNow !== 1 ? "s" : ""}} from now</div>
     </div>
+    <div class="weather-summary">{{d.summary}}</div>
     <div class="float-group">
         <div class="icon-container">
             <img class="icon" ng-src="{{d.icon}}"/>
@@ -25,7 +26,7 @@
                 </span>
             </div>
             <div class="first temperature low" ng-if="!d.temperature.average && d.temperature.low">
-                <span class="label">Low</span>
+                <span class="label">L</span>
                 <span ng-repeat="sys in currentUnitSystems">
                     <span class="{{sys}}">{{d.temperature.low[sys] | truncatedFloat : 2}}&nbsp;{{unitNamesBySystem.temperature[sys]}}</span>
                     <span ng-if="!$last" class="units-separator"> / </span>
@@ -38,7 +39,7 @@
                 </span>
             </div>
             <div class="second temperature high" ng-if="!d.temperature.average && d.temperature.high">
-                <span class="label">High</span>
+                <span class="label">H</span>
                 <span ng-repeat="sys in currentUnitSystems">
                     <span class="{{sys}}">{{d.temperature.high[sys] | truncatedFloat : 2}}&nbsp;{{unitNamesBySystem.temperature[sys]}}</span>
                     <span ng-if="!$last" class="units-separator"> / </span>
@@ -48,7 +49,7 @@
     </div>
     <div class="secondary-temperatures float-group">
         <div class="first temperature low" ng-if="d.temperature.average">
-            <span class="label">Low</span>
+            <span class="label">L</span>
             <span ng-repeat="sys in currentUnitSystems">
                 <span class="{{sys}}">{{d.temperature.low[sys] | truncatedFloat : 2}}&nbsp;{{unitNamesBySystem.temperature[sys]}}</span>
                 <span ng-if="!$last" class="units-separator"> / </span>
@@ -62,7 +63,7 @@
             </span>
         </div>
         <div class="second temperature high" ng-if="d.temperature.average">
-            <span class="label">High</span>
+            <span class="label">H</span>
             <span ng-repeat="sys in currentUnitSystems">
                 <span class="{{sys}}">{{d.temperature.high[sys] | truncatedFloat : 2}}&nbsp;{{unitNamesBySystem.temperature[sys]}}</span>
                 <span ng-if="!$last" class="units-separator"> / </span>
