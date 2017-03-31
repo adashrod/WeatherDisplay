@@ -1,4 +1,5 @@
 /**
+ * Warning: monkey patched to work on Kindle touch browser
  * @license AngularJS v1.6.3
  * (c) 2010-2017 Google, Inc. http://angularjs.org
  * License: MIT
@@ -4096,12 +4097,13 @@ NgMapShim.prototype = {
 // are still buggy (often in subtle ways) and can cause hard-to-debug failures. When native `Map`
 // implementations get more stable, we can reconsider switching to `window.Map` (when available).
 var NgMap = NgMapShim;
-
-var $$MapProvider = [/** @this */function() {
+/** @this */
+function MP() {
   this.$get = [function() {
     return NgMap;
   }];
-}];
+}
+var $$MapProvider = [MP];
 
 /**
  * @ngdoc function
@@ -4986,6 +4988,30 @@ function createInjector(modulesToLoad, strictDi) {
       return result;
     }
 
+
+    /**
+     * Monkey patch for browsers that don't support Function.prototype.bind, this constructs an eval
+     * statement to get the same effect of: calling new on a class while passing an array of args to
+     * it using Function.prototype.apply
+     * @param {Function}  klass a constructor function, must be named, ie must have been defined
+     *                          like "function MyClass() {...", not "var MyClass = function() {..."
+     * @param {Array.<*>} args  args to pass to the constructor
+     */
+    function newWithApplyUsingEval(klass, args) {
+      if (!klass.name) {
+        throw $injectorMinErr("anon",
+            "Constructor must be named function when function.bind isn't available: {0}",
+            klass.toString().substring(0, 100) + (klass.length < 100 ? "..." : ""));
+      }
+      var stmt = "new " + klass.name + "(";
+      var argsNames = [];
+      for (var i = 0; i < args.length; i++) {
+        argsNames.push("args[" + i + "]");
+      }
+      stmt += argsNames.join(", ") + ");";
+      return eval(stmt);
+    }
+
     function invoke(fn, self, locals, serviceName) {
       if (typeof locals === 'string') {
         serviceName = locals;
@@ -5002,8 +5028,12 @@ function createInjector(modulesToLoad, strictDi) {
         // #5388
         return fn.apply(self, args);
       } else {
-        args.unshift(null);
-        return new (Function.prototype.bind.apply(fn, args))();
+        if (typeof Function.prototype.bind === "function") {
+          args.unshift(null);
+          return new (Function.prototype.bind.apply(fn, args))();
+        } else {
+          return newWithApplyUsingEval(fn, args);
+        }
       }
     }
 
@@ -5013,9 +5043,13 @@ function createInjector(modulesToLoad, strictDi) {
       // e.g. someModule.factory('greeter', ['$window', function(renamed$window) {}]);
       var ctor = (isArray(Type) ? Type[Type.length - 1] : Type);
       var args = injectionArgs(Type, locals, serviceName);
-      // Empty object at position 0 is ignored for invocation with `new`, but required.
-      args.unshift(null);
-      return new (Function.prototype.bind.apply(ctor, args))();
+      if (typeof Function.prototype.bind === "function") {
+        // Empty object at position 0 is ignored for invocation with `new`, but required.
+        args.unshift(null);
+        return new (Function.prototype.bind.apply(ctor, args))();
+      } else {
+        return newWithApplyUsingEval(ctor, args);
+      }
     }
 
 
@@ -5359,13 +5393,15 @@ function prepareAnimateOptions(options) {
       : {};
 }
 
-var $$CoreAnimateJsProvider = /** @this */ function() {
+/** @this */
+function $$CoreAnimateJsProvider() {
   this.$get = noop;
-};
+}
 
 // this is prefixed with Core since it conflicts with
 // the animateQueueProvider defined in ngAnimate/animateQueue.js
-var $$CoreAnimateQueueProvider = /** @this */ function() {
+/** @this */
+function $$CoreAnimateQueueProvider() {
   var postDigestQueue = new NgMap();
   var postDigestElements = [];
 
@@ -5469,7 +5505,7 @@ var $$CoreAnimateQueueProvider = /** @this */ function() {
       }
     }
   }];
-};
+}
 
 /**
  * @ngdoc provider
@@ -5483,7 +5519,8 @@ var $$CoreAnimateQueueProvider = /** @this */ function() {
  *
  * To see the functional implementation check out `src/ngAnimate/animate.js`.
  */
-var $AnimateProvider = ['$provide', /** @this */ function($provide) {
+/** @this */
+function AnimateProvider($provide) {
   var provider = this;
   var classNameFilter = null;
 
@@ -5961,9 +5998,11 @@ var $AnimateProvider = ['$provide', /** @this */ function($provide) {
       }
     };
   }];
-}];
+}
+var $AnimateProvider = ['$provide', AnimateProvider];
 
-var $$AnimateAsyncRunFactoryProvider = /** @this */ function() {
+/** @this */
+function $$AnimateAsyncRunFactoryProvider() {
   this.$get = ['$$rAF', function($$rAF) {
     var waitQueue = [];
 
@@ -5992,9 +6031,10 @@ var $$AnimateAsyncRunFactoryProvider = /** @this */ function() {
       };
     };
   }];
-};
+}
 
-var $$AnimateRunnerFactoryProvider = /** @this */ function() {
+/** @this */
+function $$AnimateRunnerFactoryProvider() {
   this.$get = ['$q', '$sniffer', '$$animateAsyncRun', '$$isDocumentHidden', '$timeout',
        function($q,   $sniffer,   $$animateAsyncRun,   $$isDocumentHidden,   $timeout) {
 
@@ -6149,7 +6189,7 @@ var $$AnimateRunnerFactoryProvider = /** @this */ function() {
 
     return AnimateRunner;
   }];
-};
+}
 
 /* exported $CoreAnimateCssProvider */
 
@@ -6165,7 +6205,7 @@ var $$AnimateRunnerFactoryProvider = /** @this */ function() {
  *
  * Click here {@link ngAnimate.$animateCss to read the documentation for $animateCss}.
  */
-var $CoreAnimateCssProvider = function() {
+function $CoreAnimateCssProvider() {
   this.$get = ['$$rAF', '$q', '$$AnimateRunner', function($$rAF, $q, $$AnimateRunner) {
 
     return function(element, initialOptions) {
@@ -6223,7 +6263,7 @@ var $CoreAnimateCssProvider = function() {
       }
     };
   }];
-};
+}
 
 /* global stripHash: true */
 
@@ -11006,7 +11046,8 @@ function $ExceptionHandlerProvider() {
   }];
 }
 
-var $$ForceReflowProvider = /** @this */ function() {
+/** @this */
+function $$ForceReflowProvider() {
   this.$get = ['$document', function($document) {
     return function(domNode) {
       //the line below will force the browser to perform a repaint so
@@ -11027,7 +11068,7 @@ var $$ForceReflowProvider = /** @this */ function() {
       return domNode.offsetWidth + 1;
     };
   }];
-};
+}
 
 var APPLICATION_JSON = 'application/json';
 var CONTENT_TYPE_APPLICATION_JSON = {'Content-Type': APPLICATION_JSON + ';charset=utf-8'};
@@ -13238,12 +13279,13 @@ function $IntervalProvider() {
  * @ngdoc service
  * @name $jsonpCallbacks
  * @requires $window
+ * @this
  * @description
  * This service handles the lifecycle of callbacks to handle JSONP requests.
  * Override this service if you wish to customise where the callbacks are stored and
  * how they vary compared to the requested url.
  */
-var $jsonpCallbacksProvider = /** @this */ function() {
+function $jsonpCallbacksProvider() {
   this.$get = function() {
     var callbacks = angular.callbacks;
     var callbackMap = {};
@@ -13313,7 +13355,7 @@ var $jsonpCallbacksProvider = /** @this */ function() {
       }
     };
   };
-};
+}
 
 /**
  * @ngdoc service
