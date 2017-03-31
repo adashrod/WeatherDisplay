@@ -5,8 +5,6 @@ body {
     margin-left: 0;
 }
 
-button { font-size: 3vw; }
-
 .row { display: table-row; }
 
 /* clear fix */
@@ -36,19 +34,22 @@ button { font-size: 3vw; }
 
 .controls {
     position: absolute;
-    bottom: 0;
+    bottom: 15px;
     width: 100%;
 }
 
 .buttons { text-align: center; }
 
 /***** weather page directive *****/
-.weather-page .date { text-align: center; }
+.weather-page .date,
+.weather-page .weather-summary {
+    text-align: center;
+}
 
 .weather-page .secondary-temperatures .first,
 .weather-page .secondary-temperatures .second,
 .weather-page .wind {
-    margin: 0 2vw;
+    margin: 0 3%;
 }
 /***** help modal directive *****/
 .help-container {
@@ -114,10 +115,10 @@ button { font-size: 3vw; }
 
 #preferences-modal .close {
     position: absolute;
-    top: 1vw;
-    right: 1vw;
+    top: 10px;
+    right: 10px;
 
-    font-size: 6vw;
+    font-size: 30px;
 
     cursor: pointer;
 }

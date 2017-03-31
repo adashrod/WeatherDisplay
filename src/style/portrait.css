@@ -1,13 +1,15 @@
 /***** general *****/
-button { font-size: 6vw; }
+button { font-size: 31px; }
 
 /***** page-level *****/
-#location { margin-bottom: 8vw; }
+#location { margin-bottom: 20px; }
 
 .preferences-button {
     top: 5px;
     left: 5px;
 }
+
+.controls .view-switch { width: 210px; }
 
 /***** weather page directive *****/
 .weather-page .icon-container {
@@ -15,16 +17,19 @@ button { font-size: 6vw; }
     text-align: center;
 }
 
-.weather-page .icon { width: 50%; }
+.weather-page .icon {
+    width: 250px;
+    height: 300px;
+}
 
 .weather-page .primary-temperatures {
     float: none;
     text-align: center;
-    height: 30vh;
+    height: 150px;
 }
 
 .weather-page .primary-temperatures .first,
 .weather-page .primary-temperatures .second {
-    font-size: 9vw;
+    font-size: 46px;
     float: none;
 }
