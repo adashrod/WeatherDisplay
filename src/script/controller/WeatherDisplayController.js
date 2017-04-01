@@ -10,7 +10,6 @@ define([
     WeatherService
 ) {
     var interval = 10 * 60 * 1000; // 10 minutes
-    var refreshPromise = null;
 
     var WeatherDisplayController = function($scope, $window, $timeout, $http) {
         WeatherService.$http = $http;
