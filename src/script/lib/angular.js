@@ -5510,7 +5510,7 @@ function $$CoreAnimateQueueProvider() {
 /**
  * @ngdoc provider
  * @name $animateProvider
- *
+ * @this
  * @description
  * Default implementation of $animate that doesn't perform any animations, instead just
  * synchronously performs DOM updates and resolves the returned runner promise.
@@ -5519,7 +5519,6 @@ function $$CoreAnimateQueueProvider() {
  *
  * To see the functional implementation check out `src/ngAnimate/animate.js`.
  */
-/** @this */
 function AnimateProvider($provide) {
   var provider = this;
   var classNameFilter = null;
