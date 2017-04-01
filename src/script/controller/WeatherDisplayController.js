@@ -15,9 +15,11 @@ define([
     var WeatherDisplayController = function($scope, $window, $timeout, $http) {
         WeatherService.$http = $http;
         WeatherService.apiKey = AppConfig.apiKey;
-        var h = AppConfig.keyValueServerHost;
-        if (h.indexOf("http://") === -1 && h.indexOf("https://") === -1) { h = "http://" + AppConfig.keyValueServerHost; }
-        var kvApiPath = h + AppConfig.keyValueApiPath;
+        var h = AppConfig.keyValueServerHost, kvApiPath = null;
+        if (h) {
+            if (h.indexOf("http://") === -1 && h.indexOf("https://") === -1) { h = "http://" + h; }
+            kvApiPath = h + AppConfig.keyValueApiPath;
+        }
 
         $scope.showSettingsModal = false;
         $scope.Views = { DAYS: "days", HOURS: "hours" };
@@ -41,14 +43,16 @@ define([
                     $scope.currentUnitSystems.push(key.substring(4).toLowerCase());
                 }
             });
-            $http({
-                method: "POST",
-                url: kvApiPath + "/" + localStorageKey,
-                headers: {
-                    "Content-Type": "text/plain"
-                },
-                data: JSON.stringify($scope.preferences)
-            }).then(_.noop, console.error);
+            if (kvApiPath !== null) {
+                $http({
+                    method: "POST",
+                    url: kvApiPath + "/" + localStorageKey,
+                    headers: {
+                        "Content-Type": "text/plain"
+                    },
+                    data: JSON.stringify($scope.preferences)
+                }).then(_.noop, console.error);
+            }
         }
         function loadConfig() {
             function readJsonIntoScope(jsonString) {
@@ -62,7 +66,7 @@ define([
             var s = $window.localStorage.getItem(localStorageKey);
             if (s !== null && typeof s !== "undefined" && s !== "null") {
                 readJsonIntoScope(s);
-            } else {
+            } else if (kvApiPath !== null) {
                 waitingOnServerForConfig = true;
                 $http({
                     method: "GET",
