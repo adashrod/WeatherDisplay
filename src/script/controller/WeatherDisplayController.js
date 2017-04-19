@@ -91,14 +91,35 @@ define([
         function onPrefsChangeRefreshData(newVal, oldVal) {
             if (newVal === oldVal) { return; }
             $timeout.cancel(prefChangeRefreshDataPromise);
-            prefChangeRefreshDataPromise = $timeout(_.compose(getData, saveConfig), 2000);
+            prefChangeRefreshDataPromise = $timeout(_.compose(getData, saveConfig), 6000);
         }
         $scope.$watch("preferences.location", onPrefsChangeRefreshData);
         function ensurePositive(newVal, oldVal) {
             if (newVal <= 0) { $scope.preferences.hourlyInterval = oldVal > 0 ? oldVal : 1; }
         }
-        $scope.$watch("preferences.hourlyInterval", _.compose(onPrefsChangeRefreshData, ensurePositive));
+        function updateHourlyFilteredData() {
+            if (!gotCc || !gotHourly) { return; }
+            while ($scope.hourlyModeData.pop()); // works because elements are objects- never falsy
+            $scope.hourlyModeData.push(currentConditions);
+            _.each(allHourlyData, function(wd, i) {
+                if ((i + 1) % $scope.preferences.hourlyInterval === 0) {
+                    $scope.hourlyModeData.push(wd);
+                }
+            });
+            gotCc = false;
+            gotHourly = false;
+        }
+        $scope.$watch("preferences.hourlyInterval", function(newVal, oldVal) {
+            ensurePositive(newVal, oldVal);
+            gotCc = !!currentConditions;
+            gotHourly = allHourlyData.length > 0;
+            updateHourlyFilteredData();
+            saveConfig();
+        });
 
+        var gotCc = false, gotHourly = false;
+        var currentConditions;
+        var allHourlyData = [];
         $scope.hourlyModeData = [];
         $scope.dayModeData = [];
         $scope.hourlyModeApi = {};
@@ -132,25 +153,25 @@ define([
                     name: data.current_observation.display_location.full,
                     zip: data.current_observation.display_location.zip
                 };
-                var currentConditions = new WeatherData(data.current_observation, "current", new Date());
-                $scope.hourlyModeData.unshift(currentConditions);
+                currentConditions = new WeatherData(data.current_observation, "current", new Date());
+                gotCc = true;
+                updateHourlyFilteredData();
             }, _.partial(handleError, "conditions"));
             WeatherService.getHourly($scope.preferences.location, function(data) {
                 resetArrays();
                 var now = new Date();
-                var offset;
+                allHourlyData = [];
                 _.each(data.hourly_forecast, function(hourlyForecast, i) {
                     var wd = new WeatherData(hourlyForecast, "forecast");
                     if (i === 0) {
                         // excluding the first if it's less than half an hour in the future since that's not extremely useful
                         var keepFirst = wd.date.getTime() - now.getTime() > 30 * 60 * 1000;
-                        offset = keepFirst ? 1 : 0;
                         if (!keepFirst) { return; }
                     }
-                    if ((i + offset) % $scope.preferences.hourlyInterval === 0) {
-                        $scope.hourlyModeData.push(wd);
-                    }
+                    allHourlyData.push(wd);
                 });
+                gotHourly = true;
+                updateHourlyFilteredData();
             }, _.partial(handleError, "hourly"));
             WeatherService.getForecast($scope.preferences.location, function(data) {
                 resetArrays();
