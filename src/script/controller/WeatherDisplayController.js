@@ -178,16 +178,16 @@ define([
 
         $scope.previousPage = function() {
             if ($scope.currentView === $scope.Views.HOURS) {
-                return $scope.hourlyModeApi.previousPage && $scope.hourlyModeApi.previousPage() || false;
+                $scope.hourlyModeApi.previousPage && $scope.hourlyModeApi.previousPage();
             } else {
-                return $scope.dayModeApi.previousPage && $scope.dayModeApi.previousPage() || false;
+                $scope.dayModeApi.previousPage && $scope.dayModeApi.previousPage();
             }
         };
         $scope.nextPage = function() {
             if ($scope.currentView === $scope.Views.HOURS) {
-                return $scope.hourlyModeApi.nextPage && $scope.hourlyModeApi.nextPage() || false;
+                $scope.hourlyModeApi.nextPage && $scope.hourlyModeApi.nextPage();
             } else {
-                return $scope.dayModeApi.nextPage && $scope.dayModeApi.nextPage() || false;
+                $scope.dayModeApi.nextPage && $scope.dayModeApi.nextPage();
             }
         };
         $scope.hasPrevious = function() {
