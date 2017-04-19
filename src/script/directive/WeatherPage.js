@@ -41,7 +41,7 @@ define([
             });
 
             /**
-             * For a given date, returns the UTC epoch (in ms) of midnight of that day, e.g. (pseudocode)
+             * For a given date, returns the epoch (in ms) of midnight of that day, e.g. (pseudocode)
              * gME(Jan 4th 1pm) == Jan 4th 12am
              * gME(Jan 4th 5pm) == Jan 4th 12am
              * gME(Jan 4th 3am) == Jan 4th 12am
