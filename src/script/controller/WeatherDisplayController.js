@@ -85,7 +85,8 @@ define([
         $scope.$watch("preferences.showMetric", saveConfig);
         $scope.$watch("preferences.showSi", saveConfig);
         var prefChangeRefreshDataPromise = null;
-        function onPrefsChangeRefreshData() {
+        function onPrefsChangeRefreshData(newVal, oldVal) {
+            if (newVal === oldVal) { return; }
             $timeout.cancel(prefChangeRefreshDataPromise);
             prefChangeRefreshDataPromise = $timeout(_.compose(getData, saveConfig), 2000);
         }
@@ -104,7 +105,9 @@ define([
             console.error("Error in " + feature + " call:", error);
         }
 
+        var getDataPromise;
         function getData() {
+            $timeout.cancel(getDataPromise);
             if (!$scope.preferences.location) {
                 return;
             }
@@ -159,7 +162,7 @@ define([
                 yesterdaysSummary.setTextSummary(data.history.observations);
                 $scope.dayModeData.unshift(yesterdaysSummary);
             }, _.partial(handleError, "yesterday"));
-            $timeout(getData, interval);
+            getDataPromise = $timeout(getData, interval);
         }
 
         $scope.switchView = function() {
