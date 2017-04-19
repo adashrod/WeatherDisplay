@@ -14,7 +14,7 @@ Data currently includes temperature (average, low, high, current, and/or current
 
 ## Patch
 
-In the lib directory is a monkey patched angular.js (v1.6.3). Changes are included that allow the framework to work on a Kindle Touch experimental browser. The reasoning for this is that I wanted to run the app on an e-ink tablet because it's low-energy and not backlit. See details of the patch at https://github.com/adashrod/angular.js/commit/3cfbf4f1a4348cf67bddba90bc9101fc460c4a57
+In the lib directory is a monkey patched angular.js (v1.6.3). Changes are included that allow the framework to work on a Kindle Touch experimental browser. The reasoning for this is that I wanted to run the app on an e-ink tablet because it's low-energy and not backlit. See details of the patch at https://github.com/adashrod/angular.js/commits/kindle-monkey-patch
 
 ## Running
 
@@ -25,5 +25,7 @@ In the lib directory is a monkey patched angular.js (v1.6.3). Changes are includ
 The other two config properties are only necessary if you want to be able to save runtime app preferences (weather location, units to display) between browser sessions while using a browser that clears local storage at the end of the session. This feature was built because - you guessed it - the Kindle Touch browser clears local storage and cookies at the end of every session.
 
 If configured, the app will make a GET and a POST to {host} + {path} + /weatherPreferences. Content type is assumed to be text/plain.
+
+Execute makeRevision.sh, which will create another JSON file needed by the application.
 
 Run a server and point your browser to {server}/.../WeatherDisplay.html
