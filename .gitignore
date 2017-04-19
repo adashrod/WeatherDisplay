@@ -4,5 +4,6 @@
 /examples
 
 /src/script/config/application.json
+/src/script/config/revision.json
 
 /todo.txt

@@ -1,11 +1,13 @@
 define([
     "underscore",
     "json!config/application.json",
+    "json!config/revision.json",
     "model/WeatherData",
     "service/WeatherService"
 ], function(
     _,
     AppConfig,
+    Revision,
     WeatherData,
     WeatherService
 ) {
@@ -19,6 +21,7 @@ define([
             if (h.indexOf("http://") === -1 && h.indexOf("https://") === -1) { h = "http://" + h; }
             kvApiPath = h + AppConfig.keyValueApiPath;
         }
+        if (Revision) { $scope.revision = Revision.revision; }
 
         $scope.showSettingsModal = false;
         $scope.Views = { DAYS: "days", HOURS: "hours" };

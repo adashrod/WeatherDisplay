@@ -61,6 +61,11 @@
             <input id="hourly-interval" type="number" ng-model="preferences.hourlyInterval"/>
             <help-modal class="right-side">When displaying the hourly forecast, this determines what granularity of the forecast to show, e.g. every hour, every two hours, etc</help-modal>
         </div>
+        <div class="category">About</div>
+        <div class="about prefs-group">
+            <span>Git Revision:</span>
+            <span>{{revision}}</span>
+        </div>
     </div>
 </body>
 </html>
