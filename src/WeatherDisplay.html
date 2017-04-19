@@ -12,6 +12,7 @@
 </head>
 <body ng-controller="WeatherDisplayController" ng-cloak="true">
     <div id="location">{{location.name}} {{location.zip}}</div>
+    <div class="no-location" ng-if="!preferences.location">Please specify a location in preferences</div>
     <weather-page id="hourly-mode" data="hourlyModeData" current-unit-systems="currentUnitSystems" date-type="'hours'"
                   ng-show="currentView === Views.HOURS" api="hourlyModeApi"></weather-page>
     <weather-page id="day-mode" data="dayModeData" current-unit-systems="currentUnitSystems" date-type="'days'"

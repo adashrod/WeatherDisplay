@@ -21,6 +21,15 @@ body {
 /***** page-level *****/
 #location, .mode-label { text-align: center; }
 
+.no-location {
+    width: 50%;
+    height: 50%;
+    position: absolute;
+    top: 25%;
+    left: 25%;
+    text-align: center;
+    font-size: 40px;
+}
 .preferences-button {
     position: absolute;
     padding: 6px 6px 0;
