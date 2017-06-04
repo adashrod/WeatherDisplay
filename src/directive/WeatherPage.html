@@ -77,7 +77,7 @@
                 <span ng-if="d.humidity.average">{{d.humidity.average | number : 0}}%</span>
                 <span ng-if="d.humidity.current">{{d.humidity.current | number : 0}}%</span>
             </div>
-            <div class="precipitation">
+            <div class="precipitation" ng-if="d.precipitation.rain || d.precipitation.snow">
                 <span class="label">Precipitation</span>
                 <span class="label" ng-if="d.precipitation.rain.imperial">rain: </span>
                 <span ng-repeat="sys in currentUnitSystems" ng-if="d.precipitation.rain.imperial">
