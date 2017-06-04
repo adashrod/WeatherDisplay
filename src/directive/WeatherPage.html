@@ -70,13 +70,38 @@
             </span>
         </div>
     </div>
-    <div class="wind" ng-class="{'no-data': !d.wind}">
-        <span class="label">Wind</span>
-        <span ng-repeat="sys in currentUnitSystems" class="wind-speed" ng-class="{'no-data': !d.wind.speed}">
-            <span class="{{sys}}">{{d.wind.speed[sys] | truncatedFloat : 1}}&nbsp;{{unitNamesBySystem.speed[sys]}}</span>
-            <span ng-if="!$last" class="units-separator"> / </span>
-        </span>
-        <span ng-class="{'no-data': !d.wind.direction}"> {{d.wind.direction}}</span>
-        <!--<div ng-class="{'no-data': !d.wind.summary}" class="wind-summary">{{d.wind.summary}}</div>-->
+    <div class="supplemental">
+        <div class="" ng-class="{'no-data': !d.humidity && !d.precipitation}" ng-if="supplementalPage === 0">
+            <div class="humidity">
+                <span class="label">Humidity</span>
+                <span ng-if="d.humidity.average">{{d.humidity.average | number : 0}}%</span>
+                <span ng-if="d.humidity.current">{{d.humidity.current | number : 0}}%</span>
+            </div>
+            <div class="precipitation">
+                <span class="label">Precipitation</span>
+                <span class="label" ng-if="d.precipitation.rain.imperial">rain: </span>
+                <span ng-repeat="sys in currentUnitSystems" ng-if="d.precipitation.rain.imperial">
+                    <!-- special case of 2 decimal points for SI so values less than 10 cm don't get rounded down to 0 -->
+                    <span class="{{sys}}">{{sys === "si" ? (d.precipitation.rain[sys] | truncatedFloat : 2) : (d.precipitation.rain[sys] | truncatedFloat : 1)}}&nbsp;{{unitNamesBySystem.length[sys]}}</span>
+                    <span ng-if="!$last" class="units-separator"> / </span>
+                </span>
+                <span class="label" ng-if="d.precipitation.snow.imperial">snow: </span>
+                <span ng-repeat="sys in currentUnitSystems" ng-if="d.precipitation.snow.imperial">
+                    <span class="{{sys}}">{{sys === "si" ? (d.precipitation.snow[sys] | truncatedFloat : 2) : (d.precipitation.snow[sys] | truncatedFloat : 1)}}&nbsp;{{unitNamesBySystem.length[sys]}}</span>
+                    <span ng-if="!$last" class="units-separator"> / </span>
+                </span>
+                <span class="label" ng-if="!d.precipitation.rain.imperial && !d.precipitation.snow.imperial">none</span>
+            </div>
+        </div>
+        <div class="wind" ng-class="{'no-data': !d.wind}" ng-if="supplementalPage === 1">
+            <span class="label">Wind</span>
+            <span ng-repeat="sys in currentUnitSystems" class="wind-speed" ng-class="{'no-data': !d.wind.speed}">
+                <span class="{{sys}}">{{d.wind.speed[sys] | truncatedFloat : 1}}&nbsp;{{unitNamesBySystem.speed[sys]}}</span>
+                <span ng-if="!$last" class="units-separator"> / </span>
+            </span>
+            <span ng-class="{'no-data': !d.wind.direction}"> {{d.wind.direction}}</span>
+            <!--<div ng-class="{'no-data': !d.wind.summary}" class="wind-summary">{{d.wind.summary}}</div>-->
+        </div>
+        <button class="next-supplemental-page" ng-click="nextSupplementalPage()">&gt;</button>
     </div>
 </div>

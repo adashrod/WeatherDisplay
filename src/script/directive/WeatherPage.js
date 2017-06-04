@@ -14,6 +14,9 @@ define([
     function WeatherPageDirective() {
         function WeatherPageController($scope) {
             $scope.currentPage = 0;
+            $scope.supplementalPage = 0;
+            // todo: maybe create another directive for the supplemental pages
+            var numSuppPages = 2;
             $scope.unitNamesBySystem = {
                 temperature: {
                     imperial: "°F",
@@ -24,6 +27,11 @@ define([
                     imperial: "mph",
                     metric: "kph",
                     si: "m/s"
+                },
+                length: {
+                    imperial: "in",
+                    metric: "cm",
+                    si: "m"
                 }
             };
 
@@ -80,6 +88,11 @@ define([
                 return dayDiff;
             };
             $scope.getDayDifference.cache = {};
+
+            $scope.nextSupplementalPage = function() {
+                $scope.supplementalPage++;
+                $scope.supplementalPage %= numSuppPages;
+            };
 
             if ($scope.api) {
                 $scope.api.previousPage = function() {

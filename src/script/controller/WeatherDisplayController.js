@@ -153,7 +153,7 @@ define([
                     name: data.current_observation.display_location.full,
                     zip: data.current_observation.display_location.zip
                 };
-                currentConditions = new WeatherData(data.current_observation, "current", new Date());
+                currentConditions = new WeatherData(data.current_observation, null, "current", new Date());
                 gotCc = true;
                 updateHourlyFilteredData();
             }, _.partial(handleError, "conditions"));
@@ -162,7 +162,7 @@ define([
                 var now = new Date();
                 allHourlyData = [];
                 _.each(data.hourly_forecast, function(hourlyForecast, i) {
-                    var wd = new WeatherData(hourlyForecast, "forecast");
+                    var wd = new WeatherData(hourlyForecast, null, "forecast");
                     if (i === 0) {
                         // excluding the first if it's less than half an hour in the future since that's not extremely useful
                         var keepFirst = wd.date.getTime() - now.getTime() > 30 * 60 * 1000;
@@ -176,14 +176,13 @@ define([
             WeatherService.getForecast($scope.preferences.location, function(data) {
                 resetArrays();
                 _.each(data.forecast.simpleforecast.forecastday, function(forecastDay) {
-                    $scope.dayModeData.push(new WeatherData(forecastDay, "forecast"));
+                    $scope.dayModeData.push(new WeatherData(forecastDay, null, "forecast"));
                 });
             }, _.partial(handleError, "forecast"));
             WeatherService.getYesterday($scope.preferences.location, function(data) {
                 resetArrays();
-                var yesterdaysSummary = new WeatherData(data.history.dailysummary[0], "history", new Date(new Date().getTime() - 24 * 60 * 60 * 1000));
-                yesterdaysSummary.setIcon(data.history.observations);
-                yesterdaysSummary.setTextSummary(data.history.observations);
+                var yesterdaysSummary = new WeatherData(data.history.dailysummary[0], data.history.observations, "history",
+                    new Date(new Date().getTime() - 24 * 60 * 60 * 1000));
                 $scope.dayModeData.unshift(yesterdaysSummary);
             }, _.partial(handleError, "yesterday"));
             getDataPromise = $timeout(getData, interval);

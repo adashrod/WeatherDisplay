@@ -9,14 +9,18 @@ define([
      * A container for temperature and wind data. Properties include
      * temperature (TemperatureData)
      * wind (WindData)
+     * humidity (HumidityData)
+     * precipitation (PrecipitationData)
      * icon (String) icon url
      * summary (String)
      * type (String)
      * date (Date)
      */
-    function WeatherData(rawData, type, date) {
+    function WeatherData(rawData, periodicObservations, type, date) {
         var _temperatureData = new TemperatureData(rawData);
         var _windData = new WindData(rawData);
+        var _humidityData = new HumidityData(rawData, periodicObservations);
+        var _precipitationData = new PrecipitationData(rawData);
         if (_windData.summary === null && _windData.direction === null && _windData.speed === null) { _windData = null; }
         var _icon = null, _summary = null, _type = type.toString(), _date = null;
         // conditions, forecast, hourly forecast
@@ -40,13 +44,13 @@ define([
         // conditions
         if (rawData.weather) { _summary = rawData.weather; }
 
-        // used by setIcon and setTextSummary for getting text and icon from aggregate data
-        var sortedConds = [], sortedIcons = [];
-        function _populateConditions(observations) {
-            if (sortedConds.length || sortedIcons.length) { return; }
+        function _iterateObservations() {
+            if (!periodicObservations || !periodicObservations.length) { return; }
+            // used by setIcon and setTextSummary for getting text and icon from aggregate data
+            var sortedConds = [], sortedIcons = [];
             var obsConditions = {}, obsIcons = {};
             // loop through the 24 hourly observations and count how many times each one appears
-            _.each(observations, function(hourlyObs) {
+            _.each(periodicObservations, function(hourlyObs) {
                 obsConditions[hourlyObs.conds] = obsConditions[hourlyObs.conds] || 0;
                 obsConditions[hourlyObs.conds]++;
                 obsIcons[hourlyObs.icon] = obsIcons[hourlyObs.icon] || 0;
@@ -57,7 +61,14 @@ define([
             sortedConds.sort(sortByCountDesc);
             _.each(obsIcons, function(count, iconName) { sortedIcons.push({iconName: iconName, count: count}); });
             sortedIcons.sort(sortByCountDesc);
+
+            var iconName = chooseMostFrequentConditions(sortedIcons, "iconName", 2, 1)[0];
+            _icon = "https://icons.wxug.com/i/c/v4/" + iconName + ".svg";
+            var summaries = chooseMostFrequentConditions(sortedConds, "text", 2, 2);
+            _summary = summaries.join(" / ");
         }
+
+        _iterateObservations();
 
         Object.defineProperties(this, {
             temperature: {
@@ -68,25 +79,13 @@ define([
                 get: function() { return _windData; },
                 enumerable: true
             },
-            setIcon: {
-                value: function(rawData) {
-                    // history
-                    if (_.isArray(rawData)) {
-                        _populateConditions(rawData);
-                        var iconName = chooseMostFrequentConditions(sortedIcons, "iconName", 2, 1)[0];
-                        _icon = "https://icons.wxug.com/i/c/v4/" + iconName + ".svg";
-                    }
-                }
+            humidity: {
+                get: function() { return _humidityData; },
+                enumerable: true
             },
-            setTextSummary: {
-                value: function(rawData) {
-                    // history
-                    if (_.isArray(rawData)) {
-                        _populateConditions(rawData);
-                        var summaries = chooseMostFrequentConditions(sortedConds, "text", 2, 2);
-                        _summary = summaries.join(" / ");
-                    }
-                }
+            precipitation: {
+                get: function() { return _precipitationData; },
+                enumerable: true
             },
             icon: {
                 get: function() { return _icon; },
@@ -156,6 +155,17 @@ define([
         return parseFloat(speedKph) * 1000 / 3600;
     }
 
+    function inchToCm(lengthInches) {
+        return 2.54 * lengthInches;
+    }
+
+    function cmToM(lengthCm) {
+        return lengthCm / 100;
+    }
+
+    function mmToCm(lengthMm) {
+        return lengthMm / 10;
+    }
 
     /**
      * A container for various kinds of temperature data. Properties include (if applicable):
@@ -326,8 +336,131 @@ define([
 
     function Speed(imperial, metric) {
         var _imperial = parseFloat(imperial);
-        var _metric = metric && parseFloat(metric) || mphToKph(imperial);
+        var _metric = metric && parseFloat(metric) || mphToKph(_imperial);
         var _si = kphToMs(_metric);
+        if (_imperial < 0) { _imperial = 0; }
+        if (_metric < 0) { _metric = 0; }
+        if (_si < 0) { _si = 0; }
+
+        Object.defineProperties(this, {
+            imperial: {
+                get: function() { return _imperial; },
+                enumerable: true
+            },
+            metric: {
+                get: function() { return _metric; },
+                enumerable: true
+            },
+            si: {
+                get: function() { return _si; },
+                enumerable: true
+            }
+        });
+    }
+
+    var percentagePattern = /(\d+)%?/;
+    function HumidityData(rawData, periodicObservations) {
+        var _current = null, _minimum = null, _maximum = null, _average = null;
+
+        // conditions
+        if (rawData.relative_humidity) {
+            var m = rawData.relative_humidity.match(percentagePattern);
+            _current = parseInt(m[1], 10);
+        }
+
+        // hourly forecast
+        if (rawData.humidity) {
+            _current = parseInt(rawData.humidity, 10);
+        }
+
+        // day forecast
+        if (typeof rawData.minhumidity === "number") { _minimum = rawData.minhumidity; }
+        if (typeof rawData.maxhumidity === "number") { _maximum = rawData.maxhumidity; }
+        if (typeof rawData.avehumidity === "number") { _average = rawData.avehumidity; }
+
+        // history
+        if (periodicObservations && periodicObservations.length && periodicObservations[0].hum) {
+            var totalHumidity = 0;
+            _.each(periodicObservations, function(obs) {
+                totalHumidity += parseFloat(obs.hum, 10);
+            });
+            _average = totalHumidity / periodicObservations.length;
+            _current = null; // sometimes (inconsistently) the yesterday data has rawData.humidity, which is equal to
+            // the average of what's in observations (redundant)
+        }
+
+        Object.defineProperties(this, {
+            current: {
+                get: function() { return _current; },
+                enumerable: true
+            },
+            minimum: {
+                get: function() { return _minimum; },
+                enumerable: true
+            },
+            maximum: {
+                get: function() { return _maximum; },
+                enumerable: true
+            },
+            average: {
+                get: function() { return _average; },
+                enumerable: true
+            }
+        });
+    }
+
+    function PrecipitationData(rawData) {
+        var _rain = null, _snow = null;
+
+        // forecast
+        if (rawData.qpf_allday && typeof rawData.qpf_allday.in === "number") {
+            _rain = new Precipitation(rawData.qpf_allday.in, null, rawData.qpf_allday.mm);
+        }
+        if (rawData.snow_allday && typeof rawData.snow_allday.in === "number") {
+            _snow = new Precipitation(rawData.snow_allday.in, rawData.snow_allday.cm, null);
+        }
+
+        // yesterday
+        if (rawData.precipi) {
+            _rain = new Precipitation(rawData.precipi, null, rawData.precipm);
+        }
+        if (rawData.snowfalli) {                      // todo: don't know if this value is in cm or mm; assuming mm for now for literally no good reason. Check again in winter or in a different location that currently has snow
+            _snow = new Precipitation(rawData.snowfalli, null, rawData.snowfallm);
+        }
+
+        // hourly
+        if (rawData.qpf && rawData.qpf.english) {
+            _rain = new Precipitation(rawData.qpf.english, null, rawData.qpf.metric);
+        }
+        if (rawData.snow && rawData.snow.english) {
+            _snow = new Precipitation(rawData.snow.english, null, rawData.snow.metric);
+        }
+
+        Object.defineProperties(this, {
+            rain: {
+                get: function() { return _rain; },
+                enumerable: true
+            },
+            snow: {
+                get: function() { return _snow; },
+                enumerable: true
+            }
+        });
+    }
+
+    /**
+     * metric getter is in cm
+     * @param {String|Number} inches
+     * @param {String|Number} cm
+     * @param {String|Number} mm
+     */
+    function Precipitation(imperial, cm, mm) {
+        var _imperial = parseFloat(imperial);
+        var _metric = cm && parseFloat(cm) || mm && mmToCm(parseFloat(mm)) || inchToCm(_imperial);
+        var _si = cmToM(_metric);
+        if (_imperial < 0) { _imperial = 0; }
+        if (_metric < 0) { _metric = 0; }
+        if (_si < 0) { _si = 0; }
 
         Object.defineProperties(this, {
             imperial: {

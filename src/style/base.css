@@ -57,8 +57,14 @@ body {
 
 .weather-page .secondary-temperatures .first,
 .weather-page .secondary-temperatures .second,
-.weather-page .wind {
+.weather-page .supplemental {
     margin: 0 3%;
+    position: relative;
+}
+.weather-page .supplemental .next-supplemental-page {
+    position: absolute;
+    top: 0;
+    right: 0;
 }
 /***** help modal directive *****/
 .help-container {
