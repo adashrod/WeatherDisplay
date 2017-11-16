@@ -23,7 +23,7 @@
         <div class="buttons">
             <button class="home" ng-click="resetView()">&nbsp;&#x2302;&nbsp;</button>
             <button class="previous-page" ng-click="previousPage()" ng-disabled="!hasPrevious()">prev</button>
-            <button class="view-switch" ng-click="switchView()">{{currentView === Views.HOURS ? "Hourly Mode" : "Daily Mode"}}</button>
+            <button class="view-switch" ng-click="switchView()">{{currentView === Views.HOURS ? "Mode: Hourly" : "Mode: Daily"}}</button>
             <button class="next-page" ng-click="nextPage()" ng-disabled="!hasNext()">next</button>
         </div>
     </div>
