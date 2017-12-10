@@ -424,8 +424,8 @@ define([
         if (rawData.precipi) {
             _rain = new Precipitation(rawData.precipi, null, rawData.precipm);
         }
-        if (rawData.snowfalli) {                      // todo: don't know if this value is in cm or mm; assuming mm for now for literally no good reason. Check again in winter or in a different location that currently has snow
-            _snow = new Precipitation(rawData.snowfalli, null, rawData.snowfallm);
+        if (rawData.snowfalli) {
+            _snow = new Precipitation(rawData.snowfalli, rawData.snowfallm, null);
         }
 
         // hourly
