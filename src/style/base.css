@@ -49,6 +49,10 @@ body {
 
 .buttons { text-align: center; }
 
+.home, .previous-page, .next-page {
+    font-size: 2vw;
+}
+
 /***** weather page directive *****/
 .weather-page .date,
 .weather-page .weather-summary {
@@ -94,6 +98,61 @@ body {
     min-width: 350px;
 
     box-shadow: 10px 10px 20px 0px rgba(0,0,0,0.75);
+}
+
+/***** toggle slider directive *****/
+.toggle-slider {
+    position: relative;
+    display: inline-block;
+    background: #eee;
+    border: 2px solid #eee;
+    top: 7px;
+}
+
+.toggle-slider .text {
+    float: left;
+    padding: 0 15px 0 0;
+    height: 100%;
+    overflow: hidden;
+    font-size: 2vw;
+}
+
+.toggle-slider .slider-button {
+    position: absolute;
+    width: 50%;
+    height: 100%;
+    background: #ccc;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #aaa #555 #555 #aaa;
+}
+
+.toggle-slider .slider-button.on {
+    right: 0;
+    animation: slide-right 1s ease-out;
+}
+
+.toggle-slider .slider-button.off {
+    left: 0;
+    animation: slide-left 1s ease-out;
+}
+
+@keyframes slide-left {
+    0% {
+        left: 50%;
+    }
+    100 {
+        left: 0;
+    }
+}
+
+@keyframes slide-right {
+    0% {
+        right: 50%;
+    }
+    100 {
+        right: 0;
+    }
 }
 
 /***** preferences *****/

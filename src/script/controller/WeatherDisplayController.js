@@ -2,13 +2,11 @@ define([
     "underscore",
     "json!config/application.json",
     "json!config/revision.json",
-    "model/WeatherData",
     "service/WeatherService"
 ], function(
     _,
     AppConfig,
     Revision,
-    WeatherData,
     WeatherService
 ) {
     var interval = 10 * 60 * 1000; // 10 minutes
@@ -24,8 +22,7 @@ define([
         if (Revision) { $scope.revision = Revision.revision; }
 
         $scope.showSettingsModal = false;
-        $scope.Views = { DAYS: "days", HOURS: "hours" };
-        $scope.currentView = $scope.Views.HOURS;
+        $scope.currentViewHourly = true;
         $scope.preferences = {
             location: "",
             showImperial: true,
@@ -130,6 +127,7 @@ define([
         }
 
         var getDataPromise;
+        var firstLoad = true;
         function getData() {
             $timeout.cancel(getDataPromise);
             if (!$scope.preferences.location) {
@@ -147,54 +145,57 @@ define([
                     didReset = true;
                 }
             }
-            WeatherService.getConditions($scope.preferences.location, function(data) {
+            function goToToday() {
+                if (firstLoad) {
+                    console.log("goToToday", firstLoad, $scope.dayModeData.length);
+                    $timeout(function() {
+                        $scope.dayModeApi.goToPage(1);
+                        firstLoad = false;
+                    }, 1);
+                }
+            }
+            var firstForecastLoaded = false, firstYesterdayLoaded = false;
+            function forecastLoaded() {
+                firstForecastLoaded = true;
+                if (firstYesterdayLoaded) {
+                    goToToday();
+                }
+            }
+            function yesterdayLoaded() {
+                firstYesterdayLoaded = true;
+                if (firstForecastLoaded) {
+                    goToToday();
+                }
+            }
+            WeatherService.getConditions($scope.preferences.location, function(conditionsWd, location) {
                 resetArrays();
-                $scope.location = {
-                    name: data.current_observation.display_location.full,
-                    zip: data.current_observation.display_location.zip
-                };
-                currentConditions = new WeatherData(data.current_observation, null, "current", new Date());
+                $scope.location = location;
+                currentConditions = conditionsWd;
                 gotCc = true;
                 updateHourlyFilteredData();
             }, _.partial(handleError, "conditions"));
-            WeatherService.getHourly($scope.preferences.location, function(data) {
+            WeatherService.getHourly($scope.preferences.location, function(hourlyWd) {
                 resetArrays();
                 var now = new Date();
                 allHourlyData = [];
-                _.each(data.hourly_forecast, function(hourlyForecast, i) {
-                    var wd = new WeatherData(hourlyForecast, null, "forecast");
-                    if (i === 0) {
-                        // excluding the first if it's less than half an hour in the future since that's not extremely useful
-                        var keepFirst = wd.date.getTime() - now.getTime() > 30 * 60 * 1000;
-                        if (!keepFirst) { return; }
-                    }
-                    allHourlyData.push(wd);
-                });
+                // excluding the first if it's less than half an hour in the future since that's not extremely useful
+                var keepFirst = hourlyWd[0].date.getTime() - now.getTime() > 30 * 60 * 1000;
+                allHourlyData = keepFirst ? hourlyWd : hourlyWd.slice(1);
                 gotHourly = true;
                 updateHourlyFilteredData();
             }, _.partial(handleError, "hourly"));
-            WeatherService.getForecast($scope.preferences.location, function(data) {
+            WeatherService.getForecast($scope.preferences.location, function(forecastWd) {
                 resetArrays();
-                _.each(data.forecast.simpleforecast.forecastday, function(forecastDay) {
-                    $scope.dayModeData.push(new WeatherData(forecastDay, null, "forecast"));
-                });
+                $scope.dayModeData = forecastWd;
+                forecastLoaded();
             }, _.partial(handleError, "forecast"));
-            WeatherService.getYesterday($scope.preferences.location, function(data) {
+            WeatherService.getYesterday($scope.preferences.location, function(yesterdayWd) {
                 resetArrays();
-                var yesterdaysSummary = new WeatherData(data.history.dailysummary[0], data.history.observations, "history",
-                    new Date(new Date().getTime() - 24 * 60 * 60 * 1000));
-                $scope.dayModeData.unshift(yesterdaysSummary);
+                $scope.dayModeData.unshift(yesterdayWd);
+                yesterdayLoaded();
             }, _.partial(handleError, "yesterday"));
             getDataPromise = $timeout(getData, interval);
         }
-
-        $scope.switchView = function() {
-            if ($scope.currentView === $scope.Views.DAYS) {
-                $scope.currentView = $scope.Views.HOURS;
-            } else {
-                $scope.currentView = $scope.Views.DAYS;
-            }
-        };
 
         $scope.resetView = function() {
             if (typeof $scope.hourlyModeApi.goToPage === "function") { $scope.hourlyModeApi.goToPage(0); }
@@ -203,28 +204,28 @@ define([
         $scope.toggleConfigModal = function() { $scope.showSettingsModal = !$scope.showSettingsModal; };
 
         $scope.previousPage = function() {
-            if ($scope.currentView === $scope.Views.HOURS) {
+            if ($scope.currentViewHourly) {
                 $scope.hourlyModeApi.previousPage && $scope.hourlyModeApi.previousPage();
             } else {
                 $scope.dayModeApi.previousPage && $scope.dayModeApi.previousPage();
             }
         };
         $scope.nextPage = function() {
-            if ($scope.currentView === $scope.Views.HOURS) {
+            if ($scope.currentViewHourly) {
                 $scope.hourlyModeApi.nextPage && $scope.hourlyModeApi.nextPage();
             } else {
                 $scope.dayModeApi.nextPage && $scope.dayModeApi.nextPage();
             }
         };
         $scope.hasPrevious = function() {
-            if ($scope.currentView === $scope.Views.HOURS) {
+            if ($scope.currentViewHourly) {
                 return $scope.hourlyModeApi.hasPrevious && $scope.hourlyModeApi.hasPrevious() || false;
             } else {
                 return $scope.dayModeApi.hasPrevious && $scope.dayModeApi.hasPrevious() || false;
             }
         };
         $scope.hasNext = function() {
-            if ($scope.currentView === $scope.Views.HOURS) {
+            if ($scope.currentViewHourly) {
                 return $scope.hourlyModeApi.hasNext && $scope.hourlyModeApi.hasNext() || false;
             } else {
                 return $scope.dayModeApi.hasNext && $scope.dayModeApi.hasNext() || false;

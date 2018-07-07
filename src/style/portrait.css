@@ -11,6 +11,10 @@ button { font-size: 31px; }
 
 .controls .view-switch { width: 210px; }
 
+.home, .previous-page, .next-page {
+    font-size: 31px;
+}
+
 /***** weather page directive *****/
 .weather-page .icon-container {
     float: none;
@@ -32,4 +36,14 @@ button { font-size: 31px; }
 .weather-page .primary-temperatures .second {
     font-size: 46px;
     float: none;
+}
+
+/***** toggle slider directive *****/
+
+.toggle-slider {
+    top: 12px;
+}
+.toggle-slider .text {
+    font-size: 31px;
+    padding: 0 22px 0 0;
 }

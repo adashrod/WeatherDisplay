@@ -11,19 +11,19 @@
     <link rel="stylesheet" type="text/css" media="screen and (orientation:landscape)" href="style/landscape.css"/>
 </head>
 <body ng-controller="WeatherDisplayController" ng-cloak="true">
-    <div id="location">{{location.name}} {{location.zip}}</div>
+    <div id="location">{{location.name}} {{location.zipCode}}</div>
     <div class="no-location" ng-if="!preferences.location">Please specify a location in preferences</div>
     <weather-page id="hourly-mode" data="hourlyModeData" current-unit-systems="currentUnitSystems" date-type="'hours'"
-                  ng-show="currentView === Views.HOURS" api="hourlyModeApi"></weather-page>
+                  ng-show="currentViewHourly" api="hourlyModeApi"></weather-page>
     <weather-page id="day-mode" data="dayModeData" current-unit-systems="currentUnitSystems" date-type="'days'"
-                  ng-show="currentView === Views.DAYS" api="dayModeApi"></weather-page>
+                  ng-show="!currentViewHourly" api="dayModeApi"></weather-page>
 
     <button class="preferences-button" ng-click="toggleConfigModal()"><img src="images/gear.png"/></button>
     <div class="controls">
         <div class="buttons">
             <button class="home" ng-click="resetView()">&nbsp;&#x2302;&nbsp;</button>
             <button class="previous-page" ng-click="previousPage()" ng-disabled="!hasPrevious()">prev</button>
-            <button class="view-switch" ng-click="switchView()">{{currentView === Views.HOURS ? "Mode: Hourly" : "Mode: Daily"}}</button>
+            <toggle-slider boolean-property="currentViewHourly" true-value="Hourly" false-value="Daily"></toggle-slider>
             <button class="next-page" ng-click="nextPage()" ng-disabled="!hasNext()">next</button>
         </div>
     </div>
