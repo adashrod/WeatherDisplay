@@ -11,6 +11,12 @@ define([
 ) {
     var interval = 10 * 60 * 1000; // 10 minutes
 
+    function clearArray(array) {
+        while (array.length > 0) {
+            array.pop();
+        }
+    }
+
     var WeatherDisplayController = function($scope, $window, $timeout, $http) {
         WeatherService.$http = $http;
         WeatherService.apiKey = AppConfig.apiKey;
@@ -94,29 +100,39 @@ define([
         function ensurePositive(newVal, oldVal) {
             if (newVal <= 0) { $scope.preferences.hourlyInterval = oldVal > 0 ? oldVal : 1; }
         }
+        var todayMaxUv;
+        function extractTodaysUv() {
+            todayMaxUv = 0;
+            var conditionsAndHourly = allHourlyData;
+            conditionsAndHourly.unshift(currentConditions);
+            for (var i = 0; i < conditionsAndHourly.length &&
+                    currentConditions.date.getDate() === conditionsAndHourly[i].date.getDate(); i++) {
+                todayMaxUv = Math.max(todayMaxUv, conditionsAndHourly[i].uvIndex.index);
+            }
+        }
         function updateHourlyFilteredData() {
-            if (!gotCc || !gotHourly) { return; }
-            while ($scope.hourlyModeData.pop()); // works because elements are objects- never falsy
             $scope.hourlyModeData.push(currentConditions);
             _.each(allHourlyData, function(wd, i) {
                 if ((i + 1) % $scope.preferences.hourlyInterval === 0) {
                     $scope.hourlyModeData.push(wd);
                 }
             });
-            gotCc = false;
-            gotHourly = false;
+            extractTodaysUv();
         }
         $scope.$watch("preferences.hourlyInterval", function(newVal, oldVal) {
+            if (firstLoad) {
+                return;
+            }
             ensurePositive(newVal, oldVal);
-            gotCc = !!currentConditions;
-            gotHourly = allHourlyData.length > 0;
             updateHourlyFilteredData();
             saveConfig();
         });
 
-        var gotCc = false, gotHourly = false;
-        var currentConditions;
-        var allHourlyData = [];
+        var currentConditions = null, allHourlyData = [], yesterday = null, forecast = [];
+        /**
+         * hourlyModeData contains only the parts of the hourly forecast to be displayed, which will be more sparse than
+         * allHourlyData if hourlyInterval > 1
+         */
         $scope.hourlyModeData = [];
         $scope.dayModeData = [];
         $scope.hourlyModeApi = {};
@@ -133,67 +149,58 @@ define([
             if (!$scope.preferences.location) {
                 return;
             }
-            var didReset = false;
-            /**
-             * Clears the data in the arrays, assuring that they only get cleared once. Called from inside the AJAX
-             * callbacks to ensure that the display isn't blank while requests are in flight.
-             */
-            function resetArrays() {
-                if (!didReset) {
-                    $scope.hourlyModeData = [];
-                    $scope.dayModeData = [];
-                    didReset = true;
-                }
-            }
             function goToToday() {
                 if (firstLoad) {
-                    console.log("goToToday", firstLoad, $scope.dayModeData.length);
                     $timeout(function() {
                         $scope.dayModeApi.goToPage(1);
                         firstLoad = false;
                     }, 1);
                 }
             }
-            var firstForecastLoaded = false, firstYesterdayLoaded = false;
-            function forecastLoaded() {
-                firstForecastLoaded = true;
-                if (firstYesterdayLoaded) {
+
+            var flags = 0, conditionsFlag = 1, hourlyFlag = 2, forecastFlag = 4, yesterdayFlag = 8,
+                allFlags = conditionsFlag | hourlyFlag | forecastFlag | yesterdayFlag;
+            function afterLoad() {
+                if ((flags & allFlags) === allFlags) {
+                    clearArray($scope.hourlyModeData);
+                    updateHourlyFilteredData();
+
+                    clearArray($scope.dayModeData);
+                    forecast[0].setUvIndex(todayMaxUv);
+                    $scope.dayModeData.push(yesterday);
+                    Array.prototype.push.apply($scope.dayModeData, forecast);
+
                     goToToday();
-                }
-            }
-            function yesterdayLoaded() {
-                firstYesterdayLoaded = true;
-                if (firstForecastLoaded) {
-                    goToToday();
+                    flags = 0;
                 }
             }
             WeatherService.getConditions($scope.preferences.location, function(conditionsWd, location) {
-                resetArrays();
                 $scope.location = location;
                 currentConditions = conditionsWd;
-                gotCc = true;
-                updateHourlyFilteredData();
+                flags |= conditionsFlag;
+                afterLoad();
             }, _.partial(handleError, "conditions"));
             WeatherService.getHourly($scope.preferences.location, function(hourlyWd) {
-                resetArrays();
                 var now = new Date();
-                allHourlyData = [];
+                clearArray(allHourlyData);
                 // excluding the first if it's less than half an hour in the future since that's not extremely useful
                 var keepFirst = hourlyWd[0].date.getTime() - now.getTime() > 30 * 60 * 1000;
                 allHourlyData = keepFirst ? hourlyWd : hourlyWd.slice(1);
-                gotHourly = true;
-                updateHourlyFilteredData();
+                flags |= hourlyFlag;
+                afterLoad();
             }, _.partial(handleError, "hourly"));
             WeatherService.getForecast($scope.preferences.location, function(forecastWd) {
-                resetArrays();
-                $scope.dayModeData = forecastWd;
-                forecastLoaded();
+                forecast = forecastWd;
+                flags |= forecastFlag;
+                afterLoad();
             }, _.partial(handleError, "forecast"));
             WeatherService.getYesterday($scope.preferences.location, function(yesterdayWd) {
-                resetArrays();
-                $scope.dayModeData.unshift(yesterdayWd);
-                yesterdayLoaded();
+                yesterday = yesterdayWd;
+                flags |= yesterdayFlag;
+                afterLoad();
             }, _.partial(handleError, "yesterday"));
+            getDataPromise = $timeout(getData, interval);
+
             getDataPromise = $timeout(getData, interval);
         }
 

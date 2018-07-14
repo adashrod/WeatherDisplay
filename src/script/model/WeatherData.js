@@ -21,6 +21,7 @@ define([
         var _windData = new WindData(rawData);
         var _humidityData = new HumidityData(rawData, periodicObservations);
         var _precipitationData = new PrecipitationData(rawData);
+        var _uvIndex = extractUvIndex(rawData);
         if (_windData.summary === null && _windData.direction === null && _windData.speed === null) { _windData = null; }
         var _icon = null, _summary = null, _type = type.toString(), _date = null;
         // conditions, forecast, hourly forecast
@@ -86,6 +87,18 @@ define([
             precipitation: {
                 get: function() { return _precipitationData; },
                 enumerable: true
+            },
+            uvIndex: {
+                get: function() { return _uvIndex; },
+                enumerable: true
+            },
+            setUvIndex: {
+                /**
+                 * @param {Number} uvIndex a numeric Uv index
+                 */
+                value: function(uvIndex) {
+                    _uvIndex = extractUvIndex({uvi: uvIndex});
+                }
             },
             icon: {
                 get: function() { return _icon; },
@@ -473,6 +486,51 @@ define([
             },
             si: {
                 get: function() { return _si; },
+                enumerable: true
+            }
+        });
+    }
+
+    function extractUvIndex(rawData) {
+        if (rawData.UV || rawData.uvi) {
+            return new UvIndex(rawData);
+        }
+        return null;
+    }
+
+    function mapUvIndexToLabel(index) {
+        if (index < 3) {
+            return "Low";
+        }
+        if (index < 6) {
+            return "Moderate";
+        }
+        if (index < 8) {
+            return "High";
+        }
+        if (index < 11) {
+            return "Very High";
+        }
+        return "Extreme";
+    }
+
+    function UvIndex(rawData) {
+        var _index = null, _label = null;
+        if (rawData.UV) {
+            _index = parseFloat(rawData.UV);
+        }
+        if (rawData.uvi) {
+            _index = parseFloat(rawData.uvi);
+        }
+        _label = mapUvIndexToLabel(_index);
+
+        Object.defineProperties(this, {
+            index: {
+                get: function() { return _index; },
+                enumerable: true
+            },
+            label: {
+                get: function() { return _label; },
                 enumerable: true
             }
         });

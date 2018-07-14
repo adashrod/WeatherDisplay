@@ -16,7 +16,7 @@ define([
             $scope.currentPage = 0;
             $scope.supplementalPage = 0;
             // todo: maybe create another directive for the supplemental pages
-            var numSuppPages = 2;
+            var numSuppPages = 3;
             $scope.unitNamesBySystem = {
                 temperature: {
                     imperial: "°F",
@@ -35,16 +35,26 @@ define([
                 }
             };
 
-            $scope.$watch("data", function(newVal, oldVal) {
+            function resetCaches() {
                 getMidnightEpoch.cache = {};
                 $scope.getDayDifference.cache = {};
                 $scope.now = new Date();
-                _.each(newVal, function(wd) {
+            }
+
+            function calculateRelativeTimes() {
+                _.each($scope.data, function(wd) {
                     // rounding with a resolution of .5
                     wd.hoursFromNow = Math.round(2 * (wd.date.getTime() - $scope.now.getTime()) / (60 * 60 * 1000)) / 2;
                 });
+            }
+
+            $scope.$watch("data", function(newVal, oldVal) {
+                resetCaches();
+                calculateRelativeTimes();
             });
             $scope.$watch("data.length", function(newVal, oldVal) {
+                resetCaches();
+                calculateRelativeTimes();
                 if ($scope.currentPage >= newVal) { $scope.currentPage = 0; }
             });
 

@@ -71,7 +71,10 @@
         </div>
     </div>
     <div class="supplemental">
-        <div class="" ng-class="{'no-data': !d.humidity && !d.precipitation}" ng-if="supplementalPage === 0">
+        <div class="uv" ng-if="supplementalPage === 0">
+            UV Index: {{d.uvIndex ? d.uvIndex.index + ": " + d.uvIndex.label : "N/A"}}
+        </div>
+        <div class="" ng-class="{'no-data': !d.humidity && !d.precipitation}" ng-if="supplementalPage === 1">
             <div class="humidity">
                 <span class="label">Humidity</span>
                 <span ng-if="d.humidity.average">{{d.humidity.average | number : 0}}%</span>
@@ -93,7 +96,7 @@
                 <span class="label" ng-if="!d.precipitation.rain.imperial && !d.precipitation.snow.imperial">none</span>
             </div>
         </div>
-        <div class="wind" ng-class="{'no-data': !d.wind}" ng-if="supplementalPage === 1">
+        <div class="wind" ng-class="{'no-data': !d.wind}" ng-if="supplementalPage === 2">
             <span class="label">Wind</span>
             <span ng-repeat="sys in currentUnitSystems" class="wind-speed" ng-class="{'no-data': !d.wind.speed}">
                 <span class="{{sys}}">{{d.wind.speed[sys] | truncatedFloat : 1}}&nbsp;{{unitNamesBySystem.speed[sys]}}</span>
