@@ -103,7 +103,7 @@ define([
         var todayMaxUv;
         function extractTodaysUv() {
             todayMaxUv = 0;
-            var conditionsAndHourly = allHourlyData;
+            var conditionsAndHourly = allHourlyData.slice();
             conditionsAndHourly.unshift(currentConditions);
             for (var i = 0; i < conditionsAndHourly.length &&
                     currentConditions.date.getDate() === conditionsAndHourly[i].date.getDate(); i++) {
@@ -111,6 +111,7 @@ define([
             }
         }
         function updateHourlyFilteredData() {
+            clearArray($scope.hourlyModeData);
             $scope.hourlyModeData.push(currentConditions);
             _.each(allHourlyData, function(wd, i) {
                 if ((i + 1) % $scope.preferences.hourlyInterval === 0) {
@@ -162,7 +163,6 @@ define([
                 allFlags = conditionsFlag | hourlyFlag | forecastFlag | yesterdayFlag;
             function afterLoad() {
                 if ((flags & allFlags) === allFlags) {
-                    clearArray($scope.hourlyModeData);
                     updateHourlyFilteredData();
 
                     clearArray($scope.dayModeData);
@@ -185,12 +185,13 @@ define([
                 clearArray(allHourlyData);
                 // excluding the first if it's less than half an hour in the future since that's not extremely useful
                 var keepFirst = hourlyWd[0].date.getTime() - now.getTime() > 30 * 60 * 1000;
-                allHourlyData = keepFirst ? hourlyWd : hourlyWd.slice(1);
+                Array.prototype.push.apply(allHourlyData, keepFirst ? hourlyWd : hourlyWd.slice(1));
                 flags |= hourlyFlag;
                 afterLoad();
             }, _.partial(handleError, "hourly"));
             WeatherService.getForecast($scope.preferences.location, function(forecastWd) {
-                forecast = forecastWd;
+                clearArray(forecast);
+                Array.prototype.push.apply(forecast, forecastWd);
                 flags |= forecastFlag;
                 afterLoad();
             }, _.partial(handleError, "forecast"));
