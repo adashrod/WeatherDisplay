@@ -8,7 +8,8 @@
     </div>
     <div class="date" ng-if="dateType === 'hours'">
         <div ng-if="d.hoursFromNow === 0">Current conditions</div>
-        <div ng-if="d.hoursFromNow > 0">{{d.hoursFromNow}} hour{{d.hoursFromNow !== 1 ? "s" : ""}} from now</div>
+        <!-- for debugging, d.hoursFromNow shouldn't be negative, but could be if data doesn't get properly refreshed -->
+        <div ng-if="d.hoursFromNow !== 0">{{d.hoursFromNow}} hour{{d.hoursFromNow !== 1 ? "s" : ""}} from now</div>
     </div>
     <div class="weather-summary">{{d.summary}}</div>
     <div class="float-group">
@@ -72,7 +73,7 @@
     </div>
     <div class="supplemental">
         <div class="uv" ng-if="supplementalPage === 0">
-            UV Index: {{d.uvIndex ? d.uvIndex.index + ": " + d.uvIndex.label : "N/A"}}
+            UV Index: {{d.uvIndex || d.uvIndex === 0 ? d.uvIndex.index + ": " + d.uvIndex.label : "N/A"}}
         </div>
         <div class="" ng-class="{'no-data': !d.humidity && !d.precipitation}" ng-if="supplementalPage === 1">
             <div class="humidity">

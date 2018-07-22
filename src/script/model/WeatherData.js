@@ -193,38 +193,38 @@ define([
         var _currentActual = null, _currentFeelsLike = null, _current = null, _low = null, _high = null, _average = null;
 
         // conditions
-        if (rawData.temp_f) {
+        if ("temp_f" in rawData) {
             _currentActual = new Temperature(rawData.temp_f, rawData.temp_c);
             _current = {};
         }
-        if (rawData.feelslike_f) {
+        if ("feelslike_f" in rawData) {
             _currentFeelsLike = new Temperature(rawData.feelslike_f, rawData.feelslike_c);
             _current = {};
         }
         // hourly forecast
-        if (rawData.temp && rawData.temp.english) {
+        if (typeof rawData.temp === "object" && "english" in rawData.temp) {
             _currentActual = new Temperature(rawData.temp.english, rawData.temp.metric);
             _current = {};
         }
-        if (rawData.feelslike && rawData.feelslike.english) {
+        if (typeof rawData.feelslike === "object" && "english" in rawData.feelslike) {
             _currentFeelsLike = new Temperature(rawData.feelslike.english, rawData.feelslike.metric);
             _current = {};
         }
         // forecast
-        if (rawData.low && rawData.low.fahrenheit) {
+        if (typeof rawData.low === "object" && "fahrenheit" in rawData.low) {
             _low = new Temperature(rawData.low.fahrenheit, rawData.low.celsius);
         }
-        if (rawData.high && rawData.high.fahrenheit) {
+        if (typeof rawData.high === "object" && "fahrenheit" in rawData.high) {
             _high = new Temperature(rawData.high.fahrenheit, rawData.high.celsius);
         }
         // history
-        if (rawData.mintempi) {
+        if ("mintempi" in rawData) {
             _low = new Temperature(rawData.mintempi, rawData.mintempm);
         }
-        if (rawData.maxtempi) {
+        if ("maxtempi" in rawData) {
             _high = new Temperature(rawData.maxtempi, rawData.maxtempm);
         }
-        if (rawData.meantempi) {
+        if ("meantempi" in rawData) {
             _average = new Temperature(rawData.meantempi, rawData.meantempm);
         }
 
@@ -300,7 +300,7 @@ define([
         if (rawData.wind_string) {
             _summary = rawData.wind_string;
         }
-        if (rawData.wind_mph) {
+        if ("wind_mph" in rawData) {
             _speed = new Speed(rawData.wind_mph, rawData.wind_kph);
         }
         if (rawData.wind_dir) {
@@ -308,7 +308,7 @@ define([
         }
 
         // forecast
-        if (rawData.avewind && rawData.avewind.mph) {
+        if (typeof rawData.avewind === "object" && "mph" in rawData.avewind) {
             _speed = new Speed(rawData.avewind.mph, rawData.avewind.kph);
         }
         if (rawData.avewind && rawData.avewind.dir) {
@@ -316,7 +316,7 @@ define([
         }
 
         // hourly forecast
-        if (rawData.wspd && rawData.wspd.english) {
+        if (typeof rawData.wspd === "object" && "english" in rawData.wspd) {
             _speed = new Speed(rawData.wspd.english, rawData.wspd.metric);
         }
         if (rawData.wdir && rawData.wdir.dir) {
@@ -324,7 +324,7 @@ define([
         }
 
         // history
-        if (rawData.meanwindspdi) {
+        if ("meanwindspdi" in rawData) {
             _speed = new Speed(rawData.meanwindspdi, rawData.meanwindspdm);
         }
         if (rawData.meanwdire) {
@@ -382,7 +382,7 @@ define([
         }
 
         // hourly forecast
-        if (rawData.humidity) {
+        if ("humidity" in rawData) {
             _current = parseInt(rawData.humidity, 10);
         }
 
@@ -434,18 +434,19 @@ define([
         }
 
         // yesterday
-        if (rawData.precipi) {
+        if ("precipi" in rawData) {
             _rain = new Precipitation(rawData.precipi, null, rawData.precipm);
         }
-        if (rawData.snowfalli) {
+        if ("snowfalli" in rawData) {
             _snow = new Precipitation(rawData.snowfalli, rawData.snowfallm, null);
         }
 
         // hourly
-        if (rawData.qpf && rawData.qpf.english) {
+        if (typeof rawData.qpf === "object" && "english" in rawData.qpf) {
             _rain = new Precipitation(rawData.qpf.english, null, rawData.qpf.metric);
         }
-        if (rawData.snow && rawData.snow.english) {
+
+        if (typeof rawData.snow === "object" && "english" in rawData.snow) {
             _snow = new Precipitation(rawData.snow.english, null, rawData.snow.metric);
         }
 
@@ -492,7 +493,8 @@ define([
     }
 
     function extractUvIndex(rawData) {
-        if (rawData.UV || rawData.uvi) {
+        if (typeof rawData.UV === "number" || typeof rawData.UV === "string" ||
+                typeof rawData.uvi === "number" || typeof rawData.uvi === "string") {
             return new UvIndex(rawData);
         }
         return null;
@@ -516,10 +518,10 @@ define([
 
     function UvIndex(rawData) {
         var _index = null, _label = null;
-        if (rawData.UV) {
+        if (typeof rawData.UV === "number" || typeof rawData.UV === "string") {
             _index = parseFloat(rawData.UV);
         }
-        if (rawData.uvi) {
+        if (typeof rawData.uvi === "number" || typeof rawData.uvi === "string") {
             _index = parseFloat(rawData.uvi);
         }
         _label = mapUvIndexToLabel(_index);
