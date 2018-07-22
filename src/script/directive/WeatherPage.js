@@ -48,7 +48,7 @@ define([
                 });
             }
 
-            $scope.$watch("data", function(newVal, oldVal) {
+            $scope.$watchCollection("data", function(newVal, oldVal) {
                 resetCaches();
                 calculateRelativeTimes();
             });
